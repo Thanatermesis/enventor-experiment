@@ -1,0 +1,543 @@
+# Georgian translation for enventor.
+# This file is put in the public domain.
+# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: enventor\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-05 11:59+0100\n"
+"PO-Revision-Date: 2023-02-10 18:54+0100\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <(nothing)>\n"
+"Language: ka\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#: src/bin/base_gui.c:70
+#, c-format
+msgid "%s - Enventor"
+msgstr "%s - Enventor"
+
+#: src/bin/config_data.c:78
+msgid "Failed to generate tmp folder!"
+msgstr "დროებითი საქაღალდის შექმნის შეცდომა!"
+
+#: src/bin/config_data.c:99
+#, c-format
+msgid "Cannot create a config folder \"%s\""
+msgstr "კონფიგურაციის საქაღალდის (\"%s\") შექმნის შეცდომა"
+
+#: src/bin/config_data.c:113
+#, c-format
+msgid "Cannot create a enventor config folder \"%s\""
+msgstr "Enventor-ის კონფიგურაციის საქაღალდის (\"%s\") შექმნის შეცდომა"
+
+#: src/bin/config_data.c:124
+#, c-format
+msgid "Cannot save a config file \"%s\""
+msgstr "კონფიგურაციის ფაილის (\"%s\") შენახვის შეცდომა"
+
+#: src/bin/config_data.c:163
+#, c-format
+msgid "Cannot load a config file \"%s\""
+msgstr "კონფიგურაციის ფაილის (\"%s\") ჩატვირთვის შეცდომა"
+
+#: src/bin/config_data.c:171
+msgid "Failed to allocate Memory!"
+msgstr "მეხსიერების გამოყოფის შეცდომა!"
+
+#: src/bin/file_mgr.c:89
+msgid "EDC has been changed on the file system."
+msgstr "ფაილურ სისტემაზე EDC შეიცვალა."
+
+#: src/bin/file_mgr.c:91
+msgid "Do you want to replace the contents?"
+msgstr "გნებავთ შემცველობის ჩანაცვლება?"
+
+#: src/bin/file_mgr.c:102
+msgid "Save As"
+msgstr "შენახვა, როგორც"
+
+#: src/bin/file_mgr.c:110 src/bin/search.c:427
+msgid "Replace"
+msgstr "ჩანაცვლება"
+
+#: src/bin/file_mgr.c:116
+msgid "Ignore"
+msgstr "იგნორი"
+
+#: src/bin/file_mgr.c:197
+#, c-format
+msgid "File saved. \"%s\""
+msgstr "ფაილი შენახულია. \"%s\""
+
+#: src/bin/file_mgr.c:199
+#, c-format
+msgid "Already saved. \"%s\""
+msgstr "უკვე შენახულია. \"%s\""
+
+#: src/bin/goto.c:78
+msgid "Invalid line number"
+msgstr "ხაზის არასწორი ნომერი"
+
+#: src/bin/goto.c:133
+msgid "Enventor Goto Line"
+msgstr "Enventor ხაზზე გადასვლა"
+
+#: src/bin/goto.c:137
+msgid "Go to Line"
+msgstr "ხაზზე გადასვლა"
+
+#: src/bin/goto.c:158
+#, c-format
+msgid "Enter line number [1..%d]:"
+msgstr "შეიყვანეთ ხაზის ნომერი [1..%d]:"
+
+#: src/bin/goto.c:182 src/bin/menu.c:154
+msgid "Ok"
+msgstr "დიახ"
+
+#: src/bin/goto.c:194 src/bin/search.c:449
+msgid "Failed to grab key - Escape"
+msgstr "ღილაკის ჩაჭერის შეცდომა - Escape"
+
+#: src/bin/live_edit.c:2020 src/bin/live_edit.c:2057 src/bin/live_edit.c:2059
+#: src/bin/main.c:872 src/lib/auto_comp.c:410 src/lib/ctxpopup.c:813
+#, c-format
+msgid "Failed to grab key - %s"
+msgstr "ღილაკის ჩაჭერის შეცდომა - %s"
+
+#: src/bin/live_edit.c:2140
+msgid ""
+"Double click part to confirm.(Esc = cancel, Direction Key = move item per "
+"pixel,Ctrl = disable auto-aligning)"
+msgstr ""
+"ორმაგი წკაპი დასადასტურებლად .(Esc = გასაუქმებლად, მიმართულების ისარი = "
+"ჩანაწერის ერთი პიქსელით გადატანა,Ctrl = ავტომატური სწორების გამორთვა)"
+
+#: src/bin/live_edit.c:2160
+msgid ""
+"Add a Rect part to the live view.<br>A Rect part is used as a solid "
+"color<br>component or clipping other components."
+msgstr ""
+"ცოცხალი ხედისთვის მრავალკუთხედი ნაწილის დამატება.<br>მრავალკუთხედი ნაწილი "
+"შეგიძლიათ ერთგვარი ფერის<br>კომპონენტის ან სხვა კომპონენტების მისამაგრებლად "
+"გამოიყენოთ."
+
+#: src/bin/live_edit.c:2166
+msgid ""
+"Add a Text part to the live view.<br>A Text part is used for plain text."
+msgstr ""
+"ცოცხალ ხედზე ტექსტის ნაწილის დამატება.<br>ტექსტის ნაწილი უბრალო ტექსტისთვის "
+"გამოიყენება."
+
+#: src/bin/live_edit.c:2171
+msgid ""
+"Add an Image part to the live view.<br>An Image part contains a single "
+"image<br>resource, usually an image file."
+msgstr ""
+"ცოცხალი ხედისთვის გამოსახულების ნაწილის დამატება.<br>გამოსახულების ნაწილი "
+"ერთ გამოსახულების<br>რესურსს შეიცავს, ჩვეულებრივ სურათის ფაილს."
+
+#: src/bin/live_edit.c:2177
+msgid ""
+"Add a Swallow part to the live view.<br>A Swallow part is a placeholder "
+"for<br>objects that you may want to<br>include in the layout later."
+msgstr ""
+"ცოცხალი ხედისთვის Swallow ნაწილის დამატება.<br>Swallow ნაწილი ადგილმჭერია "
+"<br> ობიექტებისთვის, რომლების ჩასმაც შეიძლება<br>მოგვიანებით მოგინდეთ."
+
+#: src/bin/live_edit.c:2184
+msgid ""
+"Add a Textblock part to the live view.<br>A Textblock part is a rich-text "
+"part<br>that can show big chunks of text."
+msgstr ""
+"ცოცხალი ხედისთვის ტექსტური ბლოკის ნაწილის დამატება.<br>ტექსტური ბლოკის ნაწილ "
+"მდიდარი ტექსტის ნაწილია,<br>რომელსაც დიდი ტექსტების ჩვენება შეუძლია."
+
+#: src/bin/live_edit.c:2190
+msgid ""
+"Add a Spacer part to the live view.<br>A Spacer part is an anchor to locate "
+"<br>other parts. It is invisible and<br>normally used for padding."
+msgstr ""
+"ცოცხალი ხედისთვის Spacer ნაწილის დამატება.<br>ნაწილი Spacer მარყუჟია, "
+"რითიც<br>სხვა ნაწილებს იპოვით. ის უჩინარია და "
+"ჩვეულებრივ<br>გამოტოვებებისთვის გამოიყენება."
+
+#: src/bin/live_edit.c:2350
+msgid "Faild to allocate Memory!"
+msgstr "მეხსიერების გამოყოფის შეცდომა!"
+
+#: src/bin/main.c:212
+#, c-format
+msgid "Font Size: %1.1fx"
+msgstr "ფონტის ზომა: %1.1fx"
+
+#: src/bin/main.c:944
+#, c-format
+msgid "Cannot create temporary diretory \"%s\""
+msgstr "დროებითი საქაღალდის შექმნის შეცდომა (%s)"
+
+#: src/bin/menu.c:141
+msgid "New File: Choose a Template"
+msgstr "ახალი ფაილი: აირჩიეთ ნიმუში"
+
+#: src/bin/menu.c:160 src/bin/menu.c:206 src/bin/setting.c:242
+msgid "Cancel"
+msgstr "გაუქმება"
+
+#: src/bin/menu.c:179
+msgid "You have unsaved changes."
+msgstr "გაქვთ შეუნახავი ცვლილებები."
+
+#: src/bin/menu.c:181
+msgid "Do you want to save the changes?"
+msgstr "გსურთ ცვლილებების შენახვა?"
+
+#: src/bin/menu.c:192 src/bin/menu.c:475 src/bin/menu.c:591
+msgid "Save"
+msgstr "შენახვა"
+
+#: src/bin/menu.c:200
+msgid "Discard"
+msgstr "გაუქმება"
+
+#: src/bin/menu.c:328
+msgid "Choose a file to save"
+msgstr "აირჩიეთ შესანახი ფაილი"
+
+#: src/bin/menu.c:365
+#, c-format
+msgid "Failed to save: %s."
+msgstr "შენახვის შეცდომა: %s."
+
+#: src/bin/menu.c:419
+msgid "Support only .edc file."
+msgstr "მხარდაჭერილია მხოლოდ .edc ფაილი."
+
+#: src/bin/menu.c:429
+msgid "Choose a file to load."
+msgstr "აირჩიეთ ჩასატვირთი ფაილი."
+
+#: src/bin/menu.c:440
+#, c-format
+msgid "Failed to load: %s."
+msgstr "ჩატვირთვის შეცდომა: %s."
+
+#: src/bin/menu.c:467
+msgid "Save File: Choose a EDC"
+msgstr "ფაილის შენახვა: აირჩიეთ EDC"
+
+#: src/bin/menu.c:476 src/bin/menu.c:511
+msgid "Close"
+msgstr "დახურვა"
+
+#: src/bin/menu.c:501
+msgid "Load File: Choose a EDC"
+msgstr "ფაილის ჩატვირთვა: აირჩიეთ EDC"
+
+#: src/bin/menu.c:510 src/bin/menu.c:595
+msgid "Load"
+msgstr "ჩატვირთვა"
+
+#: src/bin/menu.c:586
+msgid "New"
+msgstr "ახალი"
+
+#: src/bin/menu.c:599 src/bin/setting.c:198
+msgid "Settings"
+msgstr "მორგება"
+
+#: src/bin/menu.c:603
+msgid "Help"
+msgstr "დახმარება"
+
+#: src/bin/menu.c:607
+msgid "Exit"
+msgstr "გასვლა"
+
+#: src/bin/newfile.c:79
+#, c-format
+msgid "Cannot find templates folder! \"%s\""
+msgstr "ნიმუშების საქაღალდე ვერ ვიპოვე! \"%s\""
+
+#: src/bin/newfile.c:124 src/bin/newfile.c:146
+#, c-format
+msgid "Cannot find file! \"%s\""
+msgstr "ფაილი ვერ ვიპოვე! \"%s\""
+
+#: src/bin/search.c:96
+#, c-format
+msgid "%d matches replaced"
+msgstr "ჩანაცვლებულია %d დამთხვევა"
+
+#: src/bin/search.c:150 src/bin/search.c:210
+#, c-format
+msgid "No \"%s\" in the text"
+msgstr "ტექსტში \"%s\" აღმოჩენილი არაა"
+
+#: src/bin/search.c:248 src/bin/search.c:413
+msgid "Previous"
+msgstr "წინა"
+
+#: src/bin/search.c:280 src/bin/search.c:420
+msgid "Next"
+msgstr "შემდეგი"
+
+#: src/bin/search.c:364
+msgid "Enventor Search"
+msgstr "Enventor-ით ძებნა"
+
+#: src/bin/search.c:367
+msgid "Find/Replace"
+msgstr "ძებნა/ჩანაცვლება"
+
+#: src/bin/search.c:434
+msgid "Replace All"
+msgstr "ყველას ჩანაცვლება"
+
+#: src/bin/setting.c:210
+msgid "Preferences"
+msgstr "მორგება"
+
+#: src/bin/setting.c:212
+msgid "Text Editor"
+msgstr "ტექსტური რედაქტორი"
+
+#: src/bin/setting.c:214
+msgid "EDC Build"
+msgstr "EDC-ის აგება"
+
+#: src/bin/setting.c:228
+msgid "Apply"
+msgstr "გადატარება"
+
+#: src/bin/setting.c:235
+msgid "Reset"
+msgstr "საწყისი მნიშვნელობებზე დაბრუნება"
+
+#: src/bin/statusbar.c:319
+msgid "View zoom level (Ctrl + Mouse Wheel)<br>Zoom the live view in or out."
+msgstr ""
+"გადიდების დონის ნახვა (Ctrl + თაგუნას ბორბალი)<br>ცოცხალი ხედის გადიდება/"
+"დაპატარავება."
+
+#: src/bin/statusbar.c:325
+msgid "Resize the width and height of the live view."
+msgstr "ცოცხალი ხედის სიგრძისა და სიგანის შეცვლა."
+
+#: src/bin/statusbar.c:330
+msgid "Swap the width and height of the live view."
+msgstr "ცოცხალი ხედის სიგრძისა და სიგანის მიმოცვლა."
+
+#: src/bin/statusbar.c:340
+msgid ""
+"Mouse cursor position in live view.<br>Absolute coordinate | Relative "
+"coordinate."
+msgstr ""
+"თაგუნას კურსორის პოზიცია ცოცხალ ხედში.<br>აბსოლუტური კოორდინატები | "
+"ფარდობითი კოორდინატები."
+
+#: src/bin/statusbar.c:351
+msgid "Name of the current editing group."
+msgstr "მიმდინარე ჩასწორების ჯგუფის სახელი."
+
+#: src/bin/statusbar.c:361
+msgid "Cursor line number : Max line number"
+msgstr "კურსორის ხაზის სახელი : მაქს ხაზის ნომერი"
+
+#: src/bin/text_setting.c:552
+#, c-format
+msgid "Failed to open file \"%s\""
+msgstr "ვერ მოხერხდა ფაილის გახსნა \"%s\""
+
+#: src/bin/text_setting.c:915
+msgid "Double click a keyword to change its color :"
+msgstr "საკვანძო სიტყვის ფერის შესაცვლელად ორჯერ დააწკაპუნეთ :"
+
+#: src/bin/text_setting.c:1010
+msgid "Font Name"
+msgstr "ფონტის სახელი"
+
+#: src/bin/text_setting.c:1037
+msgid "Font Style"
+msgstr "ფონტის სტილი"
+
+#: src/bin/tools.c:142
+msgid "Redo text."
+msgstr "ტექსტის დაბრუნება."
+
+#: src/bin/tools.c:144
+msgid "No text to be redo."
+msgstr "დასაბრუნებელი ტექსტის გარეშე."
+
+#: src/bin/tools.c:152
+msgid "Undo text."
+msgstr "ტექსტის გაუქმება."
+
+#: src/bin/tools.c:154
+msgid "No text to be undo."
+msgstr "გასაუქმებელი ტექსტის გარეშე."
+
+#: src/bin/tools.c:244
+msgid ""
+"Part highlighting (Ctrl + H)<br>Show a highlight effect on the selected "
+"part<br>in the live view."
+msgstr ""
+"ნაწილის გამოკვეთა (Ctrl + H)<br>ცოცხალ ხედში მონიშნული ნაწილის<br>გამოკვეთის "
+"ეფექტი."
+
+#: src/bin/tools.c:256
+msgid ""
+"Dummy parts (Ctrl + U)<br>Display virtual images for the swallow "
+"and<br>spacer parts."
+msgstr ""
+"ცარიელი ნაწილები (Ctrl + U)<br>აჩვენებს ვირტუალურ გამოსახულებებს Swallow და "
+"<br>Spacer ნაწილებისთვის."
+
+#: src/bin/tools.c:268
+msgid ""
+"Wireframes (Ctrl + W)<br>Display wireframes to identify the "
+"parts<br>boundaries."
+msgstr ""
+"მოდელები (Ctrl + W)<br>მოდელების ჩვენება ნაწილების<br>საზღვრების საცნობად."
+
+#: src/bin/tools.c:280
+msgid ""
+"Mirror mode (Ctrl + M)<br>Invert the layout horizontally and review<br>the "
+"designed layout in RTL(right-to-left)<br>LTR(left-to-right) settings."
+msgstr ""
+"სარკის რეჟიმი (Ctrl + M)<br>განლაგების ჰორიზონტალური ინვერსია<br>და მიღებული "
+"განლაგების მიმოხილვა RTL(მარჯვნიდან მარცხნივ)<br>LTR(მარცხნიდან მარჯვნივ) "
+"პარამეტრებში."
+
+#: src/bin/tools.c:348
+msgid "Save the file (Ctrl + S)<br>Save the current script to a file."
+msgstr "ფაილის შენახვა (Ctrl + S)<br>მიმდინარე სკრიპტის ფაილში შენახვა."
+
+#: src/bin/tools.c:357
+msgid "Undo text (Ctrl + Z)"
+msgstr "ტექსტის გაუქმება (Ctrl + Z)"
+
+#: src/bin/tools.c:365
+msgid "Redo text (Ctrl + R)"
+msgstr "ტექსტის დაბრუნება (Ctrl + R)"
+
+#: src/bin/tools.c:373
+msgid "Find/Replace (Ctrl + F)<br>Find or replace text."
+msgstr "პოვნა/ჩანაცვლება (Ctrl + F)<br>იპოვეთ ან ჩაანაცვლეთ ტექსტი."
+
+#: src/bin/tools.c:383
+msgid ""
+"Go to line (Ctrl + L)<br>Open the Go to window to move the cursor<br>line "
+"position."
+msgstr ""
+"ხაზზე გადასვლა (Ctrl + L)<br>გადასვლის განჯრის გახსნა კურსორის<br>სასურველ "
+"ხაზზე გადასატანად."
+
+#: src/bin/tools.c:394
+msgid "Line numbers<br>Display the script line numbers."
+msgstr "ხაზის ნომრები<br>სკრიპტის ხაზის ნომრების ჩვენება."
+
+#: src/bin/tools.c:404
+msgid ""
+"Insert a code snippet (Ctrl + T)<br>Enventor chooses the best code with "
+"regards<br>to the current editing context. For instance,<br>if the cursor is "
+"inside a part section,<br>description code is generated."
+msgstr ""
+"კოდის ნაწყვეტის ჩასმა (Ctrl + T)<br>Enventor აირჩევს კოდის საუკეთსო ნაწილს "
+"მიმდინარე ჩასწორების კონტექსტის გათვალისწინებით.<br>მაგალითად, თუ კურსორი,"
+"<br>ნაწილის კოდის სექციაშია,<br>გენერირდება აღწერის კოდი."
+
+#: src/bin/tools.c:418
+msgid ""
+"Console box (Alt + Down)<br>Display the console box, which shows the "
+"EDC<br>build logs, such as error messages. It pops<br>up automatically when "
+"compilation errors occur."
+msgstr ""
+"კონსოლის ფანჯარა (Alt + Down)<br>აჩვენებს კონსოლის ფანჯარა, რომელშიც EDC-ის "
+"ნახვა შეგეძლებათ, როგორიცაა<br>აგების ჟურნალი და შეცდომები.<br>ის აგების "
+"შეცდომების დროს ავტომატურად ამოხტება."
+
+#: src/bin/tools.c:430
+msgid ""
+"File browser (F9)<br>Display the file browser, which shows a file list<br>in "
+"current workspace."
+msgstr ""
+"ფაილების ბრაუზერი (F9)<br>ფაილების ბრაუზერის ჩვენება. ს მიმდინარე სამუშაო "
+"სივრცეში<br>არსებულ ფაილებს აჩვენებს."
+
+#: src/bin/tools.c:441
+msgid ""
+"EDC navigator (F10)<br>Display the EDC navigator, which shows the "
+"current<br>group hierarchy tree that contains parts,<br>descriptions and "
+"programs lists."
+msgstr ""
+"EDC ნავიგატორი (F10)<br>EDC ნავიგატორი, რომელიც აჩვენებს მიმდინარე<br>ჯგუფის "
+"იერარქიას, რომელიც ნაწილებს,<br>აღწერებს და პროგრამის სიებს შეიძლება "
+"შეიცავდეს."
+
+#: src/bin/tools.c:453
+msgid ""
+"File tab (F11)<br>Display the file tab in the bottom area<br>It shows an "
+"opened file list to switch<br>files quickly."
+msgstr ""
+"ფაილის ჩანართი (F11)<br>აჩვენებს ფაილის ჩანართს ქვედა მხარეში<br>ის ჩვენებს "
+"გახსნილი ფაილების სიას<br>მათ შორის ადგილად გადასართველად."
+
+#: src/bin/tools.c:467
+msgid "Enventor menu (Esc)<br>Open the Enventor main menu."
+msgstr "Enventor-ის მენიუ (Esc)<br>Enventor-ის მთავარი მენიუს გახსნა."
+
+#: src/bin/tools.c:514
+msgid "Part highlighting enabled."
+msgstr "ნაწილის გამოკვეთა ჩართულია."
+
+#: src/bin/tools.c:516
+msgid "Part highlighting disabled."
+msgstr "ნაწილის გამოკვეთა გამორთულია."
+
+#: src/bin/tools.c:601
+msgid "Dummy parts enabled."
+msgstr "უაზრო ნაწილები ჩართულია."
+
+#: src/bin/tools.c:603
+msgid "Dummy parts disabled."
+msgstr "უაზრო ნაწილები გამორთულია."
+
+#: src/bin/tools.c:625
+msgid "Wireframes enabled."
+msgstr "მოდელი ჩართულია."
+
+#: src/bin/tools.c:627
+msgid "Wireframes disabled."
+msgstr "მოდელი გამორთულია."
+
+#: src/bin/tools.c:650
+msgid "Mirror mode enabled."
+msgstr "სარკის რეჟიი ჩართულია."
+
+#: src/bin/tools.c:652
+msgid "Mirror mode disabled."
+msgstr "სარკის რეჟიი გამორთულია."
+
+#: src/bin/tools.c:706
+msgid "Insertion of template code is disabled while in Live Edit mode"
+msgstr "ცოცხალი ჩასწორების რეჟიმში ნიმუშის ჩართვა გათიშულია"
+
+#: src/bin/tools.c:717
+#, c-format
+msgid "Template code inserted, (%s)"
+msgstr "ნიმუშის კოდი ჩასმულია. (%s)"
+
+#: src/bin/tools.c:723
+msgid ""
+"Can't insert template code here. Move the cursor inside the \"Collections,"
+"Images,Parts,Part,Programs\" scope."
+msgstr ""
+"აქ ნიმუშის კოდს ვერ ჩასვამთ. გადაიტანეთ კურსორი \"Collections,Images,Parts,"
+"Part,Programs\" დიაპაზონში."
