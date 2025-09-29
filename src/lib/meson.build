@@ -30,7 +30,7 @@ enventor_lib = library('enventor', enventor_src,
   c_args : [ enventor_cargs,
              '-DHAVE_CONFIG_H',
              '-DENVENTOR_WIN32_BUILD_SUPPORT',
-             '-I' + join_paths(meson.source_root(), 'src/include')
+             '-I' + join_paths(meson.project_source_root(), 'src/include')
            ],
   dependencies : enventor_deps,
   include_directories : config_dir,
@@ -38,7 +38,7 @@ enventor_lib = library('enventor', enventor_src,
   version : meson.project_version()
 )
 
-enventor = declare_dependency(
+enventor_dep = declare_dependency(
   include_directories : [ include_directories('.')],
   link_with : enventor_lib,
   dependencies : enventor_deps

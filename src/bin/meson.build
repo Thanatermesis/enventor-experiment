@@ -27,8 +27,8 @@ enventor_bin_src = [
 enventor_bin = executable('enventor', enventor_bin_src,
   c_args : [ enventor_cargs,
              '-DHAVE_CONFIG_H',
-             '-I' + join_paths(meson.source_root(), 'src/include') ],
-  dependencies : [ enventor,  dependency('elementary', version : efl_req) ],
+             '-I' + join_paths(meson.project_source_root(), 'src/include') ],
+  dependencies : [ enventor_dep,  dependency('elementary', version : efl_req) ],
   include_directories : config_dir,
   install : true
 )

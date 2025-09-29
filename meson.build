@@ -1,11 +1,11 @@
 project('enventor', 'c',
-  version : '1.0.99',
-  meson_version : '>= 0.53',
   default_options : [
     'warning_level=2',
     'buildtype=debugoptimized',
     'c_std=c99'
-  ]
+  ],
+  meson_version : '>= 0.60',
+  version : '1.0.99',
 )
 
 v_array = meson.project_version().split('.')

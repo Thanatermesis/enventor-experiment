@@ -39,8 +39,8 @@ foreach edc_file : edc_template_files
     command     : edje_cc_exe +
                   [
                    '-beta',
-                   '-sd', join_paths(meson.source_root(), 'data/sounds'),
-                   '-id', join_paths(meson.source_root(), 'data/images'),
+                   '-sd', join_paths(meson.project_source_root(), 'data/sounds'),
+                   '-id', join_paths(meson.project_source_root(), 'data/images'),
                    '@INPUT@', '@OUTPUT@'
                   ],
     install     : true,
