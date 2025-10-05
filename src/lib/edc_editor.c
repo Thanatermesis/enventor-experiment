@@ -138,13 +138,14 @@ static void
 entry_recover(edit_data *ed, int cursor_pos, int sel_cur_begin, int sel_cur_end)
 {
    elm_entry_calc_force(ed->en_edit);
-   //recover cursor position??
-   elm_entry_cursor_pos_set(ed->en_edit, 0);
-   elm_entry_cursor_pos_set(ed->en_edit, cursor_pos);
 
    Edje_Object *en_edje = elm_layout_edje_get(ed->en_edit);
    if (elm_entry_scrollable_get(ed->en_edit))
      en_edje = edje_object_part_swallow_get(en_edje, "elm.swallow.content");
+
+   //recover cursor position
+   edje_object_part_text_cursor_pos_set(en_edje, "elm.text",
+                                        EDJE_CURSOR_MAIN, cursor_pos);
 
    //recover selection cursor
    edje_object_part_text_cursor_pos_set(en_edje, "elm.text",
@@ -1513,9 +1514,7 @@ edit_init(Enventor_Object *enventor, Enventor_Item *it)
    elm_scroller_policy_set(scr_edit, ELM_SCROLLER_POLICY_AUTO,
                            ELM_SCROLLER_POLICY_AUTO);
    elm_object_focus_allow_set(scr_edit, EINA_FALSE);
-   evas_object_smart_callback_add(scr_edit, "scroll,up", scroller_scroll_cb,
-                                  ed);
-   evas_object_smart_callback_add(scr_edit, "scroll,down", scroller_scroll_cb,
+   evas_object_smart_callback_add(scr_edit, "scroll", scroller_scroll_cb,
                                   ed);
    evas_object_smart_callback_add(scr_edit, "vbar,press",
                                   scroller_vbar_press_cb, ed);
