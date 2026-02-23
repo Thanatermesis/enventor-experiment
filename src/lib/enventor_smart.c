@@ -177,19 +177,26 @@ edit_view_sync_cb(void *data, Eina_Stringshare *state_name, double state_value,
         evas_object_smart_callback_call(pd->obj, SIG_CURSOR_GROUP_CHANGED,
                                         (void *) group_name);
      }
-   if (pd->part_highlight && !pd->disabled)
-     view_part_highlight_set(VIEW_DATA, part_name);
-   else
-     view_part_highlight_set(VIEW_DATA, NULL);
-
-   //reset previous part's state
-   if (!state_name)
+   // Ensure VIEW_DATA (which typically uses focused_it) is valid
+   if (pd->focused_it)
      {
-        view_part_state_set(VIEW_DATA, NULL, NULL, 0);
-        return;
+        if (pd->part_highlight && !pd->disabled)
+          view_part_highlight_set(VIEW_DATA, part_name);
+        else
+          view_part_highlight_set(VIEW_DATA, NULL);
      }
 
-   view_part_state_set(VIEW_DATA, part_name, state_name, state_value);
+   //reset previous part's state
+   if (pd->focused_it)
+     {
+        if (!state_name)
+          {
+             view_part_state_set(VIEW_DATA, NULL, NULL, 0);
+             return;
+          }
+
+        view_part_state_set(VIEW_DATA, part_name, state_name, state_value);
+     }
 }
 
 static void
@@ -229,6 +236,8 @@ call_error:
    edit_error_set(pd->main_it->ed, line_num - 1, target);
    if (line_num || target)
      edit_syntax_color_full_apply(pd->main_it->ed, EINA_TRUE);
+
+   if (target) eina_stringshare_del(target);
 
    redoundo_data *rd = edit_redoundo_get(pd->main_it->ed);
 
@@ -435,7 +444,8 @@ enventor_object_live_view_scale_set(Enventor_Object *obj, double scale)
 {
    ENVENTOR_OBJECT_DATA_GET_OR_RETURN(obj, pd);
 
-   view_scale_set(VIEW_DATA, scale);
+   if (pd->focused_it)
+     view_scale_set(VIEW_DATA, scale);
 }
 
 EAPI void
@@ -443,7 +453,8 @@ enventor_object_live_view_size_set(Enventor_Object *obj, Evas_Coord w, Evas_Coor
 {
    ENVENTOR_OBJECT_DATA_GET_OR_RETURN(obj, pd);
 
-   view_size_set(VIEW_DATA, w, h);
+   if (pd->focused_it)
+     view_size_set(VIEW_DATA, w, h);
 }
 
 EAPI void
@@ -470,7 +481,8 @@ enventor_object_dummy_parts_set(Enventor_Object *obj, Eina_Bool dummy_parts)
    dummy_parts = !!dummy_parts;
    if (pd->dummy_parts == dummy_parts) return;
 
-   view_dummy_set(VIEW_DATA, dummy_parts);
+   if (pd->focused_it)
+     view_dummy_set(VIEW_DATA, dummy_parts);
    pd->dummy_parts = dummy_parts;
 }
 
@@ -524,7 +536,8 @@ enventor_object_wireframes_set(Enventor_Object *obj, Eina_Bool wireframes)
 
    wireframes = !!wireframes;
 
-   view_wireframes_set(VIEW_DATA, wireframes);
+   if (pd->focused_it)
+     view_wireframes_set(VIEW_DATA, wireframes);
    pd->wireframes = wireframes;
 }
 
@@ -566,7 +579,8 @@ enventor_object_mirror_mode_set(Enventor_Object *obj, Eina_Bool mirror_mode)
    ENVENTOR_OBJECT_DATA_GET_OR_RETURN(obj, pd);
 
    pd->mirror_mode = !!mirror_mode;
-   view_mirror_mode_update(VIEW_DATA);
+   if (pd->focused_it)
+     view_mirror_mode_update(VIEW_DATA);
 }
 
 EAPI Eina_Bool
@@ -722,7 +736,8 @@ enventor_object_program_run(Enventor_Object *obj, const char *program)
 {
    ENVENTOR_OBJECT_DATA_GET_OR_RETURN(obj, pd);
 
-   view_program_run(VIEW_DATA, program);
+   if (pd->focused_it)
+     view_program_run(VIEW_DATA, program);
 }
 
 EAPI void
@@ -730,7 +745,8 @@ enventor_object_programs_stop(Enventor_Object *obj)
 {
    ENVENTOR_OBJECT_DATA_GET_OR_RETURN(obj, pd);
 
-   view_programs_stop(VIEW_DATA);
+   if (pd->focused_it)
+     view_programs_stop(VIEW_DATA);
 }
 
 EAPI void
