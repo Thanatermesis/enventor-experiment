@@ -320,6 +320,7 @@ syntax_color_thread_cb(void *data, Ecore_Thread *thread)
    if (!utf8) return;
    td->translated = color_apply(thread, syntax_color_data_get(td->ed->sh), utf8,
                                 strlen(utf8), NULL, NULL);
+   free(utf8);
 }
 
 static void
@@ -858,16 +859,16 @@ edit_text_insert(edit_data *ed, const char *text)
         elm_entry_entry_set(ed->en_edit, text);
         return;
      }
-   int lenght = strlen(selection_utf8);
-   int pos_from = elm_entry_cursor_pos_get(ed->en_edit) - lenght;
+   int length = strlen(selection_utf8);
+   int pos_from = elm_entry_cursor_pos_get(ed->en_edit) - length;
 
    Evas_Object *tb = elm_entry_textblock_get(ed->en_edit);
    Evas_Textblock_Cursor *cur = evas_object_textblock_cursor_get(tb);
    int old_pos = evas_textblock_cursor_pos_get(cur);
-   evas_textblock_cursor_pos_set(cur, pos_from + lenght);
+   evas_textblock_cursor_pos_set(cur, pos_from + length);
 
    /* append replacement text, and add relative diff into redoundo module */
-   evas_textblock_cursor_pos_set(cur, pos_from + lenght);
+   evas_textblock_cursor_pos_set(cur, pos_from + length);
    evas_textblock_cursor_text_append(cur, text);
    redoundo_text_relative_push(ed->rd, text);
 
@@ -875,9 +876,9 @@ edit_text_insert(edit_data *ed, const char *text)
    evas_textblock_cursor_pos_set(c_1, pos_from);
 
    Evas_Textblock_Cursor *c_2 = evas_object_textblock_cursor_new(tb);
-   evas_textblock_cursor_pos_set(c_2, pos_from + lenght);
+   evas_textblock_cursor_pos_set(c_2, pos_from + length);
    /* delete replaced text, and make diff into redoundo module */
-   redoundo_text_push(ed->rd, selection_utf8, pos_from, lenght, EINA_FALSE);
+   redoundo_text_push(ed->rd, selection_utf8, pos_from, length, EINA_FALSE);
    evas_textblock_cursor_range_delete(c_1, c_2);
 
    evas_textblock_cursor_free(c_1);
@@ -1458,6 +1459,7 @@ edit_line_delete(edit_data *ed)
    char *content = evas_textblock_cursor_range_text_get(cur1, cur2,
                                                     EVAS_TEXTBLOCK_TEXT_MARKUP);
 
+   /* Ensure we delete the range between cursors */
    evas_textblock_cursor_range_delete(cur1, cur2);
    evas_textblock_cursor_free(cur1);
    evas_textblock_cursor_free(cur2);
