@@ -57,7 +57,7 @@ warning_save_as_btn_cb(void *data, Evas_Object *obj EINA_UNUSED,
 {
    file_mgr_data *fmd = data;
 
-   //FIXME: Sepcify which file has been changed?
+   //FIXME: Specify which file has been changed?
    Enventor_Item *it = enventor_object_focused_item_get(base_enventor_get());
    enventor_item_modified_set(it, EINA_TRUE);
 
@@ -307,6 +307,8 @@ file_mgr_main_file_set(const char *path)
         realpath = ecore_file_realpath(path);
      }
 
+   if (!realpath) return NULL;
+
    //If this file is already openend with sub file, remove it.
    Eina_List *sub_its =
       (Eina_List *) enventor_object_sub_items_get(base_enventor_get());
@@ -348,7 +350,11 @@ file_mgr_main_file_set(const char *path)
      }
 
    main_it = enventor_object_main_item_set(base_enventor_get(), realpath);
-   EINA_SAFETY_ON_NULL_RETURN_VAL(main_it, NULL);
+   if (!main_it)
+     {
+        free(realpath);
+        return NULL;
+     }
 
    if (replace_focus)
      fmd->focused_it = main_it;
@@ -505,7 +511,7 @@ Eina_Bool
 file_mgr_file_backward(void)
 {
    file_mgr_data *fmd = g_fmd;
-  if (!fmd) return EINA_FALSE;
+   if (!fmd) return EINA_FALSE;
 
    Eina_List *last = eina_list_last(fmd->file_queue);
    if (!last) return EINA_FALSE;
