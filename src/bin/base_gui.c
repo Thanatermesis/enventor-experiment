@@ -277,7 +277,7 @@ void
 base_console_auto_hide(void)
 {
    base_data *bd = g_bd;
-   EINA_SAFETY_ON_NULL_RETURN(bd);;
+   EINA_SAFETY_ON_NULL_RETURN(bd);
 
    if (!config_console_get()) return;
    if (bd->console_msg) return;
@@ -384,10 +384,12 @@ base_gui_init(void)
 
    //Panes
    Evas_Object *panes = panes_init(layout);
+   if (!panes) goto error;
    elm_object_part_content_set(layout, "elm.swallow.panes", panes);
 
    //Console
    Evas_Object *console = console_create(panes);
+   if (!console) goto error;
    panes_console_set(console);
 
    if (config_console_get())
@@ -395,16 +397,19 @@ base_gui_init(void)
 
    //File Browser
    Evas_Object *file_browser = file_browser_init(layout);
+   if (!file_browser) goto error;
    elm_object_part_content_set(layout, "elm.swallow.file_browser",
                                file_browser);
    file_browser_workspace_set(config_workspace_path_get());
 
    //EDC Navigator
    Evas_Object *edc_navigator = edc_navigator_init(layout);
+   if (!edc_navigator) goto error;
    elm_object_part_content_set(layout, "elm.swallow.edc_navigator",
                                edc_navigator);
    //File Tab
    Evas_Object *file_tab = file_tab_init(layout);
+   if (!file_tab) goto error;
    elm_object_part_content_set(layout, "elm.swallow.file_tab", file_tab);
 
    bd->win = win;
@@ -412,6 +417,10 @@ base_gui_init(void)
    bd->console = console;
 
    return EINA_TRUE;
+
+error:
+   base_gui_term();
+   return EINA_FALSE;
 }
 
 void
@@ -420,7 +429,7 @@ base_gui_show(void)
    base_data *bd = g_bd;
    EINA_SAFETY_ON_NULL_RETURN(bd);
 
-   evas_object_resize(bd->win, INIT_WIN_W, INIT_WIN_H);
+   /* Note: Window size is set in base_gui_init from config */
    evas_object_show(bd->win);
 }
 
