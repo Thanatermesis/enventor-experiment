@@ -47,7 +47,7 @@ enventor_init(int argc, char **argv)
 
    if (!evas_init())
      {
-        EINA_LOG_ERR("Failed to initialize Eet");
+        EINA_LOG_ERR("Failed to initialize Evas");
         return _enventor_init_count--;
      }
 
