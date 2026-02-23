@@ -112,7 +112,6 @@ smart_analyser(redoundo_data *rd, diff_data *diff)
           }
 
         eina_stringshare_replace(&diff->text, text);
-        eina_stringshare_del(text);
         rd->last_diff = eina_list_data_get(eina_list_prev(rd->current_node));
         rd->queue = eina_list_remove_list(rd->queue, rd->current_node);
         eina_stringshare_del(tmp->text);
@@ -403,6 +402,7 @@ redoundo_text_push(redoundo_data *rd, const char *text, int pos, int length,
    diff->cursor_pos = pos;
    diff->action = insert;
    diff->relative = EINA_FALSE;
+   diff->buildable = EINA_FALSE;
 
    diff = smart_analyser(rd, diff);
    rd->smart.continues_input = EINA_FALSE;
@@ -492,18 +492,25 @@ redoundo_text_relative_push(redoundo_data *rd, const char *text)
 
    diff->text = eina_stringshare_add(text);
    char *utf8 = evas_textblock_text_markup_to_utf8(NULL, diff->text);
+   if (!utf8)
+     {
+        eina_stringshare_del(diff->text);
+        free(diff);
+        return;
+     }
    diff->length = strlen(utf8);
+   free(utf8);
+
    diff->cursor_pos = elm_entry_cursor_pos_get(rd->entry);
    diff->action = EINA_TRUE;
    diff->relative = EINA_TRUE;
+   diff->buildable = EINA_FALSE;
 
    untracked_diff_free(rd);
 
    rd->queue = eina_list_append(rd->queue, diff);
    rd->last_diff = diff;
    rd->current_node = eina_list_last(rd->queue);
-
-   free(utf8);
 }
 
 void
