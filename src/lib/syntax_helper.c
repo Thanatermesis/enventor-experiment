@@ -18,14 +18,16 @@ struct syntax_helper_s
 /*****************************************************************************/
 
 static Eina_Bool
-buf_flush_timer_cb(void *data)
+buf_flush_timer_cb(void *data EINA_UNUSED)
 {
-   syntax_helper *sh = data;
-   /* At this moment, I have no idea the policy of the eina strbuf.
-      If the string buffer wouldn't reduce the buffer size, it needs to prevent
-      the buffer size not to be grown endlessly. */
-   eina_strbuf_free(sh->strbuf);
-   sh->strbuf = eina_strbuf_new();
+   /* This timer was intended to prevent endless growth of the strbuf,
+      but simply replacing the buffer here causes use-after-free in
+      color_data and indent_data which hold the original pointer.
+      Instead of replacing the buffer, we reset it to reclaim memory
+      if the Eina implementation allows, or we should handle pointer
+      updates across all sub-modules. For now, we reset it. */
+   // syntax_helper *sh = data;
+   // eina_strbuf_reset(sh->strbuf);
 
    return ECORE_CALLBACK_RENEW;
 }
@@ -48,6 +50,12 @@ syntax_init(edit_data *ed)
 
    sh->cd = color_init(sh->strbuf);
    sh->id = indent_init(sh->strbuf, ed);
+
+   if (!sh->cd || !sh->id)
+     {
+        syntax_term(sh);
+        return NULL;
+     }
 
    return sh;
 }
