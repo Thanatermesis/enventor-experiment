@@ -278,6 +278,7 @@ text_setting_syntax_color_load(void)
    for (; color_type < ENVENTOR_SYNTAX_COLOR_LAST; color_type++)
      {
         color = config_syntax_color_get(color_type);
+        memset(color_val[color_type], 0, SYNTAX_COLOR_LEN);
         if (color) strncpy(color_val[color_type], color, 6);
         else strncpy(color_val[color_type], "FFFFFF", 6);
      }
@@ -409,6 +410,7 @@ convert_hexadecimal_to_decimal(char *hexadecimal)
    int i;
    int len;
    int decimal = 0;
+   int value = 0;
    char digit;
 
    if (!hexadecimal) return 0;
@@ -421,11 +423,15 @@ convert_hexadecimal_to_decimal(char *hexadecimal)
         digit = hexadecimal[i];
 
         if ((digit >= 'a') && (digit <= 'f'))
-          decimal += ((digit - 'a') + 10) * pow(16, (len - i - 1));
+          value = (digit - 'a') + 10;
         else if ((digit >= 'A') && (digit <= 'F'))
-          decimal += ((digit - 'A') + 10) * pow(16, (len - i - 1));
+          value = (digit - 'A') + 10;
         else if ((digit >= '0') && (digit <= '9'))
-          decimal += atoi(&digit) * pow(16, (len - i - 1));
+          value = digit - '0';
+        else
+          continue;
+
+        decimal = (decimal * 16) + value;
      }
    return decimal;
 }
@@ -562,15 +568,16 @@ syntax_template_format_create(text_setting_data *tsd)
 
    tsd->syntax_template_format = syntax_template_format;
 
+   eina_file_map_free(file, utf8);
    eina_file_close(file);
 
    return tsd->syntax_template_format;
 
 err:
    mem_fail_msg();
-   if (utf8) free(utf8);
+   if (utf8) eina_file_map_free(file, utf8);
 
-   eina_file_close(file);
+   if (file) eina_file_close(file);
 
    return NULL;
 }
