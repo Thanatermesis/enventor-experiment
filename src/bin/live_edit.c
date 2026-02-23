@@ -71,6 +71,7 @@ typedef struct live_editor_s
    struct {
       char *rel1_x_part, *rel1_y_part;
       char *rel2_x_part, *rel2_y_part;
+      char *rel2_y_part_orig; // Helper to track internal allocations
       float rel1_x, rel1_y;
       float rel2_x, rel2_y;
       float align_x, align_y;
@@ -829,9 +830,9 @@ keygrabber_direction_key_down_cb(void *data, Evas *e EINA_UNUSED,
 
    //Check live view boundary
    if (vx > x) x = vx;
-   if ((x + w) > (vx + vw)) x = (vx + vw) - w;
+   if (vw > 0 && (x + w) > (vx + vw)) x = (vx + vw) - w;
    if (vy > y) y = vy;
-   if ((y + h) > (vy + vh)) y -= ((y + h) - (vy + vh));
+   if (vh > 0 && (y + h) > (vy + vh)) y = (vy + vh) - h;
 
    evas_object_move(ld->layout, x, y);
 
@@ -1174,8 +1175,8 @@ cp_mouse_move_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
    ev->event_flags |= EVAS_EVENT_FLAG_ON_HOLD;
 
    //Dispatch to actual mouse move call
-   Ctrl_Pt cp = (Ctrl_Pt) evas_object_data_get(obj, "index");
-   if (cp == Ctrl_Pt_Cnt) return; //not to use Ctrl_Pt_Cnt as index.
+   Ctrl_Pt cp = (Ctrl_Pt)(uintptr_t)evas_object_data_get(obj, "index");
+   if (cp >= Ctrl_Pt_Cnt) return; //not to use Ctrl_Pt_Cnt as index.
 
    //Show Control Point
    live_data *ld = data;
@@ -1350,8 +1351,9 @@ show_relative_to_list(live_data *ld, int x, int y, Ctrl_Pt cp)
    unsigned int i;
    Eina_Array_Iterator iter;
    auto_align_data *al_pos;
+   int align_line = 0;
    Evas_Coord_Point cur_ctrl_pt = calc_ctrl_pt_auto_align_pos(ld, x, y,
-                                                              0, NULL);
+                                                              0, &align_line);
    //Ctxpopup
    Evas_Object *ctxpopup = elm_ctxpopup_add(base_layout_get());
    elm_object_style_set(ctxpopup, "enventor");
@@ -2037,8 +2039,9 @@ static Eina_Bool
 live_edit_layer_set(live_data *ld)
 {
    //Keygrabber
-   ld->keygrabber =
-      evas_object_rectangle_add(evas_object_evas_get(ld->live_view));
+   Evas *evas = evas_object_evas_get(ld->live_view);
+   if (!evas) return EINA_FALSE;
+   ld->keygrabber = evas_object_rectangle_add(evas);
    evas_object_event_callback_add(ld->keygrabber, EVAS_CALLBACK_KEY_DOWN,
                                   keygrabber_key_down_cb, ld);
    evas_object_event_callback_add(ld->keygrabber, EVAS_CALLBACK_KEY_UP,
@@ -2302,6 +2305,12 @@ live_edit_cancel(Eina_Bool phase_in)
         evas_object_del(ld->info_text_bg[i]);
         ld->info_text_bg[i] = NULL;
      }
+
+   free(ld->rel_to_info.rel1_x_part);
+   free(ld->rel_to_info.rel1_y_part);
+   free(ld->rel_to_info.rel2_x_part);
+   free(ld->rel_to_info.rel2_y_part);
+   rel_to_values_reset(ld);
 
    ld->on = EINA_FALSE;
    ld->align_left = EINA_FALSE;
