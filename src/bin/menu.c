@@ -339,15 +339,17 @@ fileselector_save_done_cb(void *data, Evas_Object *obj, void *event_info)
         selected = eina_stringshare_printf("%s.edc", selected);
         is_edc = EINA_TRUE;
      }
+   else
+     {
+        eina_stringshare_ref(selected);
+     }
 
    Enventor_Object *enventor = base_enventor_get();
    Enventor_Item *it = file_mgr_focused_item_get();
 
    if (is_edc)
      {
-        Eina_Bool main_file;
-        if (file_mgr_main_item_get() == it) main_file = EINA_TRUE;
-        else main_file = EINA_TRUE;
+        Eina_Bool main_file = (file_mgr_main_item_get() == it);
 
         //Update config path if main file.
         if (main_file)
@@ -387,6 +389,7 @@ fileselector_save_done_cb(void *data, Evas_Object *obj, void *event_info)
    file_mgr_reset();
    fileselector_close(md);
    menu_close(md);
+   eina_stringshare_del(selected);
 }
 
 static void
@@ -633,6 +636,7 @@ void
 menu_term(void)
 {
    menu_data *md = g_md;
+   eina_stringshare_del(md->last_accessed_path);
    free(md);
 }
 
@@ -722,6 +726,9 @@ enventor_ctxpopup_dismissed_cb(void *data, Evas_Object *obj EINA_UNUSED,
 {
    menu_data *md = data;
    EINA_SAFETY_ON_NULL_RETURN(md);
+
+   evas_object_smart_callback_del(obj, "ctxpopup,dismissed",
+                                  enventor_ctxpopup_dismissed_cb);
 
    warning_open(md, exit_yes_btn_cb, exit_save_btn_cb);
 }
