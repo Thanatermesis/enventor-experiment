@@ -77,7 +77,9 @@ replace_all_proc(search_data *sd)
    int replace_cnt = 0;
 
    const char *text = enventor_item_text_get(sd->it);
+   if (!text) return;
    char *utf8 = elm_entry_markup_to_utf8(text);
+   if (!utf8) return;
 
    char *s = utf8;
    int pos;
@@ -127,13 +129,17 @@ find_forward_proc(search_data *sd)
    const char *text = enventor_item_text_get(sd->it);
    if (!text) return;
    char *utf8 = elm_entry_markup_to_utf8(text);
+   if (!utf8) return;
+
+   int utf8_len = strlen(utf8);
 
    //get the character position begun with searching.
    if (sd->pos == -1) sd->pos = enventor_item_cursor_pos_get(sd->it);
    else if (sd->pos == 0) need_iterate = EINA_FALSE;
-   else sd->pos++;
+   else if (sd->pos < utf8_len) sd->pos++;
 
-   char *s = strstr((utf8 + sd->pos), find);
+   char *s = NULL;
+   if (sd->pos < utf8_len) s = strstr((utf8 + sd->pos), find);
 
    //No found
    if (!s)
@@ -175,6 +181,9 @@ find_backward_proc(search_data *sd)
    const char *text = enventor_item_text_get(sd->it);
    if (!text) return;
    char *utf8 = elm_entry_markup_to_utf8(text);
+   if (!utf8) return;
+
+   len = strlen(utf8);
 
    //get the character position begun with searching.
    if (sd->pos == -1)
@@ -183,8 +192,7 @@ find_backward_proc(search_data *sd)
       }
    else
       {
-         len = strlen(utf8);
-         if (sd->pos == len) need_iterate = EINA_FALSE;
+         if (sd->pos >= len) need_iterate = EINA_FALSE;
       }
 
    char *prev = NULL;
@@ -230,7 +238,12 @@ replace_proc(search_data *sd)
    const char *selection = enventor_item_selection_get(sd->it);
    if (!find || !selection) return EINA_FALSE;
    char *utf8 = elm_entry_markup_to_utf8(selection);
-   if (strcmp(find, utf8)) return EINA_FALSE;
+   if (!utf8) return EINA_FALSE;
+   if (strcmp(find, utf8))
+     {
+        free(utf8);
+        return EINA_FALSE;
+     }
    const char *replace = elm_entry_entry_get(sd->en_replace);
    enventor_item_text_insert(sd->it, replace);
    enventor_item_select_none(sd->it);
