@@ -5,12 +5,13 @@
 /*****************************************************************************/
 
 static void
-token_value_get(char *src, char *key_str, char end_key, int offset, char *dst)
+token_value_get(char *src, char *key_str, char end_key, int offset, char *dst, size_t dst_size)
 {
    char *psrc = src;
-   int count = 0;
+   size_t count = 0;
    psrc += strlen(key_str) + offset;
-   while (*psrc != end_key)
+   /* Added bounds checking and null terminator check to prevent segfaults/overflows */
+   while (*psrc && *psrc != end_key && count < (dst_size - 1))
      dst[count++] = *psrc++;
    dst[count] = '\0';
 }
@@ -39,15 +40,15 @@ error_word_select(Evas_Object *console)
 
    //Parse edc line
    if ((edc_token = strstr(console_text, "edc : ")))
-     token_value_get(edc_token, "edc : ", ' ', 0, error_line);
+     token_value_get(edc_token, "edc : ", ' ', 0, error_line, sizeof(error_line));
    else
      goto end;
 
    //Parse error word
    if ((error_token = strstr(console_text, "keyword")))
-     token_value_get(error_token, "keyword", ' ', 1, error_word);
+     token_value_get(error_token, "keyword", ' ', 1, error_word, sizeof(error_word));
    else if ((error_token = strstr(console_text, "name")))
-     token_value_get(error_token, "name", ' ', 1, error_word);
+     token_value_get(error_token, "name", ' ', 1, error_word, sizeof(error_word));
    else
      goto end;
 
@@ -107,56 +108,55 @@ set_console_error_msg(Evas_Object *console, const char *src)
 char*
 error_msg_syntax_color_set(char *text)
 {
-   char *color_error_msg;
+   Eina_Strbuf *buf;
+   char *result;
    const char color_end[] = "</color>";
    const char color_red[] = "<color=#FF4848>";
    const char color_green[] = "<color=#5CD1E5>";
    const char color_yellow[] = "<color=#FFBB00>";
 
-   color_error_msg = (char *)calloc(1024, sizeof(char));
+   /* Switched to Eina_Strbuf to prevent buffer overflows during string construction */
+   buf = eina_strbuf_new();
+   if (!buf) return NULL;
+
    char *token = strtok(text, " ");
    while (token != NULL)
      {
-        if (strstr(token, "edje_cc:"))
+        if (strstr(token, "edje_cc:") || strstr(token, "Error"))
           {
-             strncat(color_error_msg, color_red, 15);
-             strncat(color_error_msg, token, strlen(token));
-             strncat(color_error_msg, color_end, 8);
-          }
-        else if (strstr(token, "Error"))
-          {
-             strncat(color_error_msg, color_red, 15);
-             strncat(color_error_msg, token, strlen(token));
-             strncat(color_error_msg, color_end, 8);
+             eina_strbuf_append(buf, color_red);
+             eina_strbuf_append(buf, token);
+             eina_strbuf_append(buf, color_end);
           }
         else if (strstr(token, ".edc"))
           {
-             strncat(color_error_msg, color_yellow, 15);
-             if (strstr(strstr(token, ".edc"), ":"))
+             eina_strbuf_append(buf, color_yellow);
+             char *number = strstr(token, ":");
+             if (number && (number > strstr(token, ".edc")))
                {
-                  char *number = strstr(strstr(token, ".edc"), ":");
-                  int len = strlen(token) - strlen(number);
-                  strncat(color_error_msg, token, len);
-                  strncat(color_error_msg, color_end, 8);
-                  strncat(color_error_msg, " : ", 3);
-                  strncat(color_error_msg, color_green, 15);
-                  strncat(color_error_msg, number + 1, strlen(number) - 1);
-                  strncat(color_error_msg, color_end, 8);
+                  eina_strbuf_append_length(buf, token, number - token);
+                  eina_strbuf_append(buf, color_end);
+                  eina_strbuf_append(buf, " : ");
+                  eina_strbuf_append(buf, color_green);
+                  eina_strbuf_append(buf, number + 1);
+                  eina_strbuf_append(buf, color_end);
                }
              else
                {
-                  strncat(color_error_msg, token, strlen(token));
-                  strncat(color_error_msg, color_end, 8);
+                  eina_strbuf_append(buf, token);
+                  eina_strbuf_append(buf, color_end);
                }
           }
         else
           {
-             strncat(color_error_msg, token, strlen(token));
+             eina_strbuf_append(buf, token);
           }
-        strncat(color_error_msg, " ", 1);
+        eina_strbuf_append(buf, " ");
         token = strtok(NULL, " ");
      }
-   return color_error_msg;
+   result = eina_strbuf_string_steal(buf);
+   eina_strbuf_free(buf);
+   return result;
 }
 
 /*****************************************************************************/
