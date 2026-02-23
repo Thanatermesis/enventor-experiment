@@ -23,6 +23,7 @@ template_random_string_create(char *paragh, char *buf, int size)
    if (paragh)
      paragh_len = strlen(paragh);
 
+   // Ensure we don't overflow buf: paragh_len + '_' + size + '\0'
    if (paragh_len > 0)
      {
         memcpy(buf, paragh, paragh_len);
@@ -115,8 +116,9 @@ textblock_style_add(edit_data *ed, const char *style_name)
         elm_entry_entry_insert(edit_entry, TEMPLATE_TEXTBLOCK_STYLE_BLOCK[0]);
      }
 
-   int buf_len = strlen(TEMPLATE_TEXTBLOCK_STYLE_BLOCK[1]) + strlen(style_name);
+   int buf_len = strlen(TEMPLATE_TEXTBLOCK_STYLE_BLOCK[1]) + strlen(style_name) + 1;
    char *buf = malloc(buf_len);
+   if (!buf) return;
    snprintf(buf, buf_len, TEMPLATE_TEXTBLOCK_STYLE_BLOCK[1], style_name);
    elm_entry_entry_insert(edit_entry, p);
    elm_entry_entry_insert(edit_entry, buf);
@@ -249,27 +251,27 @@ template_part_insert(edit_data *ed, Edje_Part_Type part_type,
         case EDJE_PART_TYPE_RECTANGLE:
            line_cnt = TEMPLATE_PART_RECT_LINE_CNT;
            t = (char **) &TEMPLATE_PART_RECT;
-           strncpy(type_name, "rect\0", 5);
+           snprintf(type_name, sizeof(type_name), "rect");
            break;
         case EDJE_PART_TYPE_TEXT:
            line_cnt = TEMPLATE_PART_TEXT_LINE_CNT;
            t = (char **) &TEMPLATE_PART_TEXT;
-           strncpy(type_name, "text\0", 5);
+           snprintf(type_name, sizeof(type_name), "text");
            break;
         case EDJE_PART_TYPE_SWALLOW:
            line_cnt = TEMPLATE_PART_SWALLOW_LINE_CNT;
            t = (char **) &TEMPLATE_PART_SWALLOW;
-           strncpy(type_name, "swallow\0", 8);
+           snprintf(type_name, sizeof(type_name), "swallow");
            break;
         case EDJE_PART_TYPE_TEXTBLOCK:
            line_cnt = TEMPLATE_PART_TEXTBLOCK_LINE_CNT;
            t = (char **) &TEMPLATE_PART_TEXTBLOCK;
-           strncpy(type_name, "textblock\0", 10);
+           snprintf(type_name, sizeof(type_name), "textblock");
            break;
         case EDJE_PART_TYPE_SPACER:
            line_cnt = TEMPLATE_PART_SPACER_LINE_CNT;
            t = (char **) &TEMPLATE_PART_SPACER;
-           strncpy(type_name, "spacer\0", 7);
+           snprintf(type_name, sizeof(type_name), "spacer");
            break;
         case EDJE_PART_TYPE_IMAGE:
         case EDJE_PART_TYPE_NONE:
@@ -287,17 +289,17 @@ template_part_insert(edit_data *ed, Edje_Part_Type part_type,
         case EDJE_PART_TYPE_LAST:
            line_cnt = TEMPLATE_PART_IMAGE_LINE_CNT;
            t = (char **) &TEMPLATE_PART_IMAGE;
-           strncpy(type_name, "image\0", 6);
+           snprintf(type_name, sizeof(type_name), "image");
            break;
      }
 
    //Insert first line of the part block with generated name.
-   char first_line[40];
-   char random_name[15];
+   char first_line[64];
+   char random_name[32];
    template_random_string_create(type_name, random_name, 4);
 
    elm_entry_entry_insert(edit_entry, p);
-   snprintf(first_line, 40, "%s { \"%s\";<br/>", type_name, random_name);
+   snprintf(first_line, sizeof(first_line), "%s { \"%s\";<br/>", type_name, random_name);
    elm_entry_entry_insert(edit_entry, first_line);
 
    //Insert part body
