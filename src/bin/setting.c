@@ -42,6 +42,7 @@ setting_dismiss_done_cb(void *data, Evas_Object *obj EINA_UNUSED,
 {
    setting_data *sd = data;
 
+   preference_setting_term(sd->psd);
    text_setting_term(sd->tsd);
    build_setting_term(sd->bsd);
 
@@ -59,9 +60,9 @@ setting_apply_btn_cb(void *data, Evas_Object *obj EINA_UNUSED,
 {
    setting_data *sd = data;
 
-   preference_setting_config_set(sd->psd);
-   build_setting_config_set(sd->bsd);
-   text_setting_config_set(sd->tsd);
+   if (sd->psd) preference_setting_config_set(sd->psd);
+   if (sd->bsd) build_setting_config_set(sd->bsd);
+   if (sd->tsd) text_setting_config_set(sd->tsd);
 
    config_apply();
 
@@ -81,9 +82,9 @@ setting_reset_btn_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
 {
    setting_data *sd = data;
 
-   preference_setting_reset(sd->psd);
-   text_setting_reset(sd->tsd);
-   build_setting_reset(sd->bsd);
+   if (sd->psd) preference_setting_reset(sd->psd);
+   if (sd->tsd) text_setting_reset(sd->tsd);
+   if (sd->bsd) build_setting_reset(sd->bsd);
 }
 
 static void
