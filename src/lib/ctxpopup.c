@@ -118,10 +118,10 @@ ctxpopup_it_cb(void *data, Evas_Object *obj, void *event_info)
    const Eina_Stringshare *append_str = NULL;
 
    //Append different string to each candidate list.
-   if (ctxdata->attr->use_append_str_array)
+   if (ctxdata->attr->use_append_str_array && ctxdata->attr->append_str_array)
      {
         int idx = array_data_idx(ctxdata->attr->strs, (void *)text);
-        if (idx != -1)
+        if (idx != -1 && (unsigned int)idx < eina_array_count_get(ctxdata->attr->append_str_array))
           {
              append_str = (const Eina_Stringshare *)
                 eina_array_data_get(ctxdata->attr->append_str_array, idx);
@@ -133,7 +133,9 @@ ctxpopup_it_cb(void *data, Evas_Object *obj, void *event_info)
         append_str = ctxdata->attr->append_str;
      }
    snprintf(ctxdata->candidate, sizeof(ctxdata->candidate), "%s %s%s",
-            ctxdata->attr->prepend_str, text, append_str);
+            ctxdata->attr->prepend_str ? ctxdata->attr->prepend_str : "",
+            text ? text : "",
+            append_str ? (const char *)append_str : "");
 
    ctxdata->changed_cb(ctxdata->data, obj, ctxdata->candidate);
    elm_ctxpopup_dismiss(obj);
@@ -850,6 +852,7 @@ ctxpopup_img_preview_create(edit_data *ed,
    if (!ctxdata)
      {
         EINA_LOG_ERR("Failed to allocate Memory!");
+        evas_object_del(ctxpopup);
         return NULL;
      }
    ctxdata->relay_cb = ctxpopup_relay_cb;
@@ -890,9 +893,13 @@ ctxpopup_img_preview_create(edit_data *ed,
 static Eina_Bool
 is_colorselector_type(ctxpopup_data *ctxdata)
 {
+   if (!ctxdata->attr || !ctxdata->attr->strs ||
+       eina_array_count_get(ctxdata->attr->strs) == 0)
+     return EINA_FALSE;
+
    ctxdata->integer = EINA_TRUE;
    const char* integer_type = eina_array_data_get(ctxdata->attr->strs, 0);
-   if (!strcmp(integer_type, "R:"))
+   if (integer_type && !strcmp(integer_type, "R:"))
      {
        if (preset_colors.is_created == EINA_FALSE)
          preset_colors.is_created = EINA_TRUE;
@@ -942,7 +949,6 @@ ctxpopup_candidate_list_create(edit_data *ed, attr_value *attr,
           }
         case ATTR_VALUE_INTEGER:
           {
-             ctxdata->integer = EINA_TRUE;
              if (is_colorselector_type(ctxdata))
                colorselector_layout_set(ctxpopup, ctxdata);
              else
