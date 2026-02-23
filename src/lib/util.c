@@ -28,6 +28,14 @@ part_type_str_convert(Edje_Part_Type type)
            return "textblock";
         case EDJE_PART_TYPE_SPACER:
            return "spacer";
+        case EDJE_PART_TYPE_GROUP:
+           return "group";
+        case EDJE_PART_TYPE_BOX:
+           return "box";
+        case EDJE_PART_TYPE_TABLE:
+           return "table";
+        case EDJE_PART_TYPE_PROXY:
+           return "proxy";
         default:
            return "part";
      }
