@@ -318,8 +318,8 @@ cur_context_thread_blocking(void *data, Ecore_Thread *thread)
                        if (isdigit(*value) || *value == '.')
                          {
                             value_len = value_end - value;
-                            value_buf = (char *)calloc(1, value_len);
-                            memcpy(value_buf, value, value_len);
+                            value_buf = (char *)calloc(1, value_len + 1);
+                            if (value_buf) memcpy(value_buf, value, value_len);
                             break;
                          }
                        value++;
@@ -1927,6 +1927,13 @@ parser_term(parser_data *pd)
                     eina_stringshare_del(eina_array_pop(attr->value.strs));
                   eina_array_free(attr->value.strs);
                }
+             if (attr->value.use_append_str_array && attr->value.append_str_array)
+               {
+                  while (eina_array_count(attr->value.append_str_array))
+                    eina_stringshare_del(eina_array_pop(attr->value.append_str_array));
+                  eina_array_free(attr->value.append_str_array);
+               }
+             if (attr->context) eina_stringshare_del(attr->context);
           }
         eina_inarray_free(pd->attrs);
      }
@@ -2000,14 +2007,19 @@ parser_is_image_name(const Evas_Object *entry, const char *str)
    if (end_pos < 0) return EINA_FALSE;
 
    char *candidate_str = alloca(end_pos - start_pos + 1);
-   const char *src_str = elm_entry_markup_to_utf8(str);
-   strncpy(candidate_str, utf8 + start_pos, end_pos - start_pos);
-   candidate_str[end_pos - start_pos] = '\0';
+   char *src_str = elm_entry_markup_to_utf8(str);
+   Eina_Bool found = EINA_FALSE;
 
-   if (strstr(candidate_str, src_str))
-     return EINA_TRUE;
-   else
-     return EINA_FALSE;
+   if (src_str)
+     {
+        strncpy(candidate_str, utf8 + start_pos, end_pos - start_pos);
+        candidate_str[end_pos - start_pos] = '\0';
+        if (strstr(candidate_str, src_str)) found = EINA_TRUE;
+        free(src_str);
+     }
+
+   free(utf8);
+   return found;
 }
 
 void
@@ -2151,7 +2163,8 @@ parser_group_list_get(parser_data *pd EINA_UNUSED, Evas_Object *entry)
             if (group_name)
               group_list = eina_list_append(group_list, group_name);
          }
-       p++;
+       if (p < (utf8 + utf8_len)) p++;
+       else break;
      }
 
 end:
