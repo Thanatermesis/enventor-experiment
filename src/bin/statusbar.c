@@ -96,6 +96,11 @@ view_invert_btn_cb(void *data EINA_UNUSED, Evas_Object *obj,
    id->diff_h = w - h;
 
    Elm_Transit *transit = elm_transit_add();
+   if (!transit)
+     {
+        free(id);
+        return;
+     }
    elm_transit_object_add(transit, obj);
    elm_transit_effect_add(transit, view_invert_transit_op, id,
                           view_invert_transit_end);
@@ -297,7 +302,7 @@ stats_edc_group_update(Eina_Stringshare *group_name)
    EINA_SAFETY_ON_NULL_RETURN(sd);
 
    elm_object_part_text_set(sd->layout, "elm.text.group_name", group_name);
-   sd->group_name = eina_stringshare_add(group_name);
+   eina_stringshare_replace(&sd->group_name, group_name);
 }
 
 Evas_Object *
