@@ -429,8 +429,12 @@ sub_brows_file_list_create(brows_file *file)
 
         //Create sub file without creating its sub file list.
         brows_file *sub_file = brows_file_create(sub_file_path, EINA_FALSE);
+        if (!sub_file)
+          {
+             free(sub_file_path);
+             continue;
+          }
         free(sub_file_path);
-        if (!sub_file) continue;
 
         sub_file_list =
            eina_list_sorted_insert(sub_file_list,
@@ -499,7 +503,7 @@ search_file_set_internal(const char *file_path)
    /* Create brows_file and append genlist item if current file name contains
       search word. */
    const char *file_name = ecore_file_file_get(file_path);
-   if (file_name && strstr(file_name, search_word))
+   if (file_name && strcasestr(file_name, search_word))
      {
         //Check "Show All Files" option.
         File_Browser_File_Type type = brows_file_type_get(file_path);
@@ -522,7 +526,7 @@ search_file_set_internal(const char *file_path)
 
    if (!ecore_file_is_dir(file_path)) return;
 
-   //Set sub files by calling function resursively.
+   //Set sub files by calling function recursively.
    Eina_List *sub_file_name_list = ecore_file_ls(file_path);
    char *sub_file_name = NULL;
    const char *dir_path = file_path;
@@ -679,7 +683,7 @@ file_browser_workspace_set(const char *workspace_path)
 
    if (bd->workspace)
      {
-        if (!strcmp(workspace_path, bd->workspace->path))
+        if (bd->workspace->path && !strcmp(workspace_path, bd->workspace->path))
           return;
 
         brows_file_free(bd->workspace);
@@ -975,7 +979,7 @@ file_browser_selected_file_main_set(void)
 }
 
 void
-file_browser_show()
+file_browser_show(void)
 {
    brows_data *bd = g_bd;
    if (!bd) return;
@@ -988,7 +992,7 @@ file_browser_show()
 }
 
 void
-file_browser_hide()
+file_browser_hide(void)
 {
    brows_data *bd = g_bd;
    if (!bd) return;
