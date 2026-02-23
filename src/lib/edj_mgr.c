@@ -83,15 +83,22 @@ edj_mgr_init(Enventor_Object *enventor)
    g_em = em;
 
    Evas_Object *layout = elm_layout_add(enventor);
+   if (!layout)
+     {
+        free(em);
+        return;
+     }
    elm_layout_file_set(layout, EDJE_PATH, "viewer_layout");
    em->enventor = enventor;
    em->layout = layout;
+   g_em = em;
 }
 
 void
 edj_mgr_term(void)
 {
    edj_mgr *em = g_em;
+   if (!em) return;
 
    edj_mgr_clear();
    evas_object_del(em->layout);
@@ -121,9 +128,12 @@ void
 edj_mgr_view_del(view_data *vd)
 {
    edj_mgr *em = g_em;
+   if (!em) return;
    edj_data *edj = view_data_get(vd);
+   if (!edj) return;
    em->edjs = eina_list_remove(em->edjs, edj);
    ecore_timer_del(edj->timer);
+   if (em->edj == edj) em->edj = NULL;
    view_term(vd);
    free(edj);
 }
@@ -209,6 +219,7 @@ Evas_Object *
 edj_mgr_obj_get(void)
 {
    edj_mgr *em = g_em;
+   if (!em) return NULL;
    return em->layout;
 }
 
@@ -216,6 +227,7 @@ void
 edj_mgr_reload_need_set(Eina_Bool reload)
 {
    edj_mgr *em = g_em;
+   if (!em) return;
    em->reload_need = reload;
 }
 
@@ -223,6 +235,7 @@ Eina_Bool
 edj_mgr_reload_need_get(void)
 {
    edj_mgr *em = g_em;
+   if (!em) return EINA_FALSE;
    return em->reload_need;
 }
 
