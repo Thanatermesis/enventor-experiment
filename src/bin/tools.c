@@ -141,7 +141,7 @@ redo_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
    if (enventor_item_redo(file_mgr_focused_item_get()))
      stats_info_msg_update(_("Redo text."));
    else
-     stats_info_msg_update(_("No text to be redo."));
+     stats_info_msg_update(_("No text to be redone."));
 }
 
 static void
@@ -151,7 +151,7 @@ undo_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
    if (enventor_item_undo(file_mgr_focused_item_get()))
      stats_info_msg_update(_("Undo text."));
    else
-     stats_info_msg_update(_("No text to be undo."));
+     stats_info_msg_update(_("No text to be undone."));
 }
 
 static void
@@ -204,6 +204,7 @@ tools_term(void)
    tools_data *td = g_td;
    if (!td) return;
    free(td);
+   g_td = NULL;
 }
 
 void
@@ -476,8 +477,8 @@ tools_init(Evas_Object *parent)
    tools_space_insert(box_right, 14);
    td->text_editor_ly = text_editor_scr;
 
-   //Turn on if console is valid size.
-   if (!config_console_get() && (config_console_size_get() > 0))
+   //Turn on if console is valid size and enabled.
+   if (config_console_get() && (config_console_size_get() > 0))
      tools_console_update(EINA_TRUE);
 }
 
