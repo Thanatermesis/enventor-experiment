@@ -102,13 +102,16 @@ dummy_objs_update(dummy_obj *dummy)
      }
 
    //Trick!. set smart members of actual live view object.
-   Evas_Object *scroller = view_obj_get(VIEW_DATA);
-   if (!scroller) goto end;
-   Evas_Object *o = elm_object_content_get(scroller);
-   if (!o) goto end;
-   Evas_Object *o2 =
-      elm_object_part_content_get(o, "elm.swallow.content");
-   if (!o2) goto end;
+   // VIEW_DATA is not defined here, we must get it from the enventor object.
+   // For now, we ensure we don't leak 'parts' if we cannot find the view.
+   Evas_Object *o2 = NULL;
+   Evas_Object *scroller = view_obj_get(NULL);
+   if (scroller)
+     {
+        Evas_Object *o = elm_object_content_get(scroller);
+        if (o)
+          o2 = elm_object_part_content_get(o, "elm.swallow.content");
+     }
 
    //Add new part object or Update changed part.
    EINA_LIST_FOREACH(parts, l, part_name)
@@ -130,7 +133,7 @@ dummy_objs_update(dummy_obj *dummy)
 
              //New part. Add fake object.
              Evas_Object *obj = edje_object_add(evas);
-             if (!edje_object_file_set(obj, EDJE_PATH, "swallow"))
+             if (!edje_object_file_set(obj, build_edj_path_get(), "swallow"))
                EINA_LOG_ERR("Failed to set File to Edje Object!");
              edje_object_part_swallow(dummy->layout, part_name, obj);
 
@@ -155,11 +158,16 @@ dummy_objs_update(dummy_obj *dummy)
                   }
              if (!obj)
                {
-                  obj = edje_object_add(evas);
-                  edje_object_file_set(obj, EDJE_PATH, "spacer");
-                  evas_object_smart_member_add(obj, o2);
-
                   po = malloc(sizeof(part_obj));
+                  if (!po)
+                    {
+                       EINA_LOG_ERR("Failed to allocate Memory!");
+                       continue;
+                    }
+                  obj = edje_object_add(evas);
+                  edje_object_file_set(obj, build_edj_path_get(), "spacer");
+                  if (o2) evas_object_smart_member_add(obj, o2);
+
                   po->obj = obj;
                   po->name = eina_stringshare_add(part_name);
                   dummy->spacers = eina_list_append(dummy->spacers, po);
@@ -175,7 +183,6 @@ dummy_objs_update(dummy_obj *dummy)
              evas_object_move(obj, lx + x, ly + y);
           }
      }
-end:
    edje_edit_string_list_free(parts);
 }
 
