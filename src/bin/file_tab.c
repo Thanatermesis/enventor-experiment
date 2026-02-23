@@ -75,6 +75,7 @@ list_item_selected_cb(void *data, Evas_Object *obj EINA_UNUSED,
    Elm_Object_Item *it = event_info;
 
    if (fd->selected_it == it) return;
+   fd->selected_it = it;
 
    //When list item's close button is clicked, this selection is triggered
    //prior to the close button clicked callback.
@@ -94,8 +95,9 @@ file_tab_it_remove_internal(file_tab_it *fti)
    //FIXME: If this item is main, then it needs to close project.
 
    //If the focused item is removed, then enable next item.
-   if (elm_list_selected_item_get(list) == fti->it)
+   if (g_fd->selected_it == fti->it)
      {
+        g_fd->selected_it = NULL;
         //Next?
         Elm_Object_Item *it;
         it = elm_list_item_next(fti->it);
