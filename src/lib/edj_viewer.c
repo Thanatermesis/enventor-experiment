@@ -63,7 +63,7 @@ static void
 view_obj_parts_callbacks_set(view_data *vd);
 
 static Eina_Bool
-exe_del_event_cb(void *data, int type, void *even);
+exe_del_event_cb(void *data, int type, void *event);
 
 /*****************************************************************************/
 /* Internal method implementation                                            */
@@ -305,12 +305,12 @@ rect_mouse_move_cb(void *data, Evas *e EINA_UNUSED,
    cursor.rely = (float) ((ev->cur.canvas.y - y) / (float) h);
 
    if (vd->view_config_size.w > 0)
-     cursor.x = (((double)vd->view_config_size.w) * cursor.relx);
+     cursor.x = (Evas_Coord)(((double)vd->view_config_size.w) * cursor.relx);
    else
      cursor.x = (ev->cur.canvas.x - x);
 
    if (vd->view_config_size.h > 0)
-     cursor.y = (((double)vd->view_config_size.h) * cursor.rely);
+     cursor.y = (Evas_Coord)(((double)vd->view_config_size.h) * cursor.rely);
    else
      cursor.y = (ev->cur.canvas.y - y);
 
@@ -938,22 +938,31 @@ void
 view_part_state_set(view_data *vd, Eina_Stringshare *part,
                     Eina_Stringshare *desc, double state)
 {
-   if (!vd) return;
+   if (!vd || !vd->layout || !vd->file_set_finished) return;
    if (!part && !vd->changed_part.part) return;
-   if (!vd->file_set_finished) return;
 
-   //reset previous part?
+   /* If the part has changed, reset the previous part to default state
+      and release the previous stringshares to avoid memory leaks. */
    if (part != vd->changed_part.part)
      {
-        view_part_state_set(vd, vd->changed_part.part, "default", 0.0);
-        eina_stringshare_del(vd->changed_part.part);
-        eina_stringshare_del(vd->changed_part.desc);
+        if (vd->changed_part.part)
+          {
+             edje_edit_part_selected_state_set(vd->layout, vd->changed_part.part,
+                                               "default", 0.0);
+             eina_stringshare_del(vd->changed_part.part);
+             eina_stringshare_del(vd->changed_part.desc);
+             vd->changed_part.part = NULL;
+             vd->changed_part.desc = NULL;
+          }
      }
 
-   edje_edit_part_selected_state_set(vd->layout, part, desc, state);
-   vd->changed_part.part = eina_stringshare_add(part);
-   vd->changed_part.desc = eina_stringshare_add(desc);
-   vd->changed_part.state = state;
+   if (part)
+     {
+        edje_edit_part_selected_state_set(vd->layout, part, desc, state);
+        eina_stringshare_replace(&vd->changed_part.part, part);
+        eina_stringshare_replace(&vd->changed_part.desc, desc);
+        vd->changed_part.state = state;
+     }
 }
 
 void
