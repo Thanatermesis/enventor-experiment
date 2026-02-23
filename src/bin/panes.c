@@ -122,7 +122,7 @@ panes_h_full_view_cancel(panes_data *pd)
         config_console_size_set(DEFAULT_CONSOLE_SIZE);
      }
    
-   elm_transit_del(pd->horiz.transit);
+   if (pd->horiz.transit) elm_transit_del(pd->horiz.transit);
 
    Elm_Transit *transit = elm_transit_add();
    elm_transit_effect_add(transit, transit_op_h, pd, NULL);
@@ -141,7 +141,7 @@ panes_v_full_view_cancel(panes_data *pd)
    pd->vert.origin = elm_panes_content_right_size_get(pd->vert.obj);
    pd->vert.delta = pd->vert.last_size[1] - pd->vert.origin;
 
-   elm_transit_del(pd->vert.transit);
+   if (pd->vert.transit) elm_transit_del(pd->vert.transit);
 
    Elm_Transit *transit = elm_transit_add();
    elm_transit_effect_add(transit, transit_op_v, pd, NULL);
@@ -244,7 +244,7 @@ panes_editors_full_view(Eina_Bool full_view)
         pd->horiz.origin = elm_panes_content_right_size_get(pd->horiz.obj);
         pd->horiz.delta = 0.0 - pd->horiz.origin;
 
-        elm_transit_del(pd->horiz.transit);
+        if (pd->horiz.transit) elm_transit_del(pd->horiz.transit);
         Elm_Transit *transit = elm_transit_add();
         elm_transit_effect_add(transit, transit_op_h, pd, NULL);
         elm_transit_tween_mode_set(transit, ELM_TRANSIT_TWEEN_MODE_DECELERATE);
@@ -282,7 +282,7 @@ panes_console_full_view(void)
    pd->horiz.origin = origin;
    pd->horiz.delta = 1.0 - pd->horiz.origin;
 
-   elm_transit_del(pd->horiz.transit);
+   if (pd->horiz.transit) elm_transit_del(pd->horiz.transit);
 
    Elm_Transit *transit = elm_transit_add();
    elm_transit_effect_add(transit, transit_op_h, pd, NULL);
@@ -329,9 +329,10 @@ panes_term(void)
    EINA_SAFETY_ON_NULL_RETURN(pd);
 
    evas_object_del(pd->horiz.obj);
-   elm_transit_del(pd->horiz.transit);
-   elm_transit_del(pd->vert.transit);
+   if (pd->horiz.transit) elm_transit_del(pd->horiz.transit);
+   if (pd->vert.transit) elm_transit_del(pd->vert.transit);
    free(pd);
+   g_pd = NULL;
 }
 
 Evas_Object *
