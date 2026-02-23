@@ -66,7 +66,7 @@ indent_insert_br_case(indent_data *id)
    eina_strbuf_reset(diff);
    int rd_cur_pos = evas_textblock_cursor_pos_get(cur);
 
-   if (strlen(utf8) > 0)
+   if (utf8 && strlen(utf8) > 0)
      {
         evas_textblock_cursor_paragraph_char_first(cur);
         int i = 0;
@@ -463,11 +463,11 @@ indent_text_auto_format(indent_data *id, const char *insert)
    Eina_List *code_line_list = indent_code_line_list_create(id, utf8);
    indent_line *code_line = NULL;
    free(utf8);
-   if (!code_line_list) goto end;
+   if (!code_line_list) return 0;
 
    /* Check if indentation should be applied to the first code line.
       Indentation is applied if prior string has only spaces. */
-   code_line= eina_list_data_get(code_line_list);
+   code_line = eina_list_data_get(code_line_list);
    if (code_line->indent_apply)
      {
         Evas_Textblock_Cursor *check_start
@@ -540,8 +540,8 @@ indent_text_auto_format(indent_data *id, const char *insert)
    evas_textblock_cursor_line_char_first(cur_start);
 
    //Move cursor to the position where the inserted string will be prepended.
-   code_line= eina_list_data_get(code_line_list);
-   if (code_line->indent_apply)
+   code_line = eina_list_data_get(code_line_list);
+   if (code_line && code_line->indent_apply)
      {
         evas_textblock_cursor_line_char_first(cur_start);
         int space_pos_start = evas_textblock_cursor_pos_get(cur_start);
@@ -674,8 +674,13 @@ int
 indent_space_get(indent_data *id)
 {
    //Get the indentation depth
+   const char *entry_text = elm_entry_entry_get(id->entry);
+   if (!entry_text) return 0;
+
    int pos = elm_entry_cursor_pos_get(id->entry);
-   char *src = elm_entry_markup_to_utf8(elm_entry_entry_get(id->entry));
+   char *src = elm_entry_markup_to_utf8(entry_text);
+   if (!src) return 0;
+
    int space = indent_depth_get(id, src, pos);
    if (space < 0) space = 0;
    space *= TAB_SPACE;
@@ -761,8 +766,7 @@ indent_text_check(indent_data *id EINA_UNUSED, const char *utf8)
 
         if (*utf8_ptr == '}')
           {
-             depth--;
-             if (depth < 0) depth = 0;
+             if (depth > 0) depth--;
           }
 
         //Tab is not allowed.
