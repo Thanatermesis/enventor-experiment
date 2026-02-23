@@ -64,14 +64,16 @@ config_edj_path_update(config_data *cd)
 
    char *ext = strstr(cd->input_path, ".edc");
    const char *file = ecore_file_file_get(cd->input_path);
-   if (ext && file)
+   if (ext && file && (ext > file))
      {
         char filename[PATH_MAX];
-        snprintf(filename, (ext - file) + 1, "%s", file);
+        size_t len = ext - file;
+        if (len >= PATH_MAX) len = PATH_MAX - 1;
+        snprintf(filename, len + 1, "%s", file);
         snprintf(buf, sizeof(buf), "%s_XXXXXX.edj", filename);
      }
    else
-     snprintf(buf, sizeof(buf), "%s_XXXXXX.edj", file);
+     snprintf(buf, sizeof(buf), "%s_XXXXXX.edj", file ? file : "enventor");
 
    if (!eina_file_mkstemp(buf, &tmp_path))
      {
@@ -421,7 +423,7 @@ config_snd_path_set(const char *snd_path)
    const char *lex;
    Eina_Stringshare *append;
 
-   while(snd_path && (strlen(snd_path) > 0))
+   while(snd_path && snd_path[0] != '\0')
      {
         lex = strstr(snd_path, ";");
         if (lex)
@@ -432,7 +434,7 @@ config_snd_path_set(const char *snd_path)
                                                       append);
              eina_strbuf_append(cd->snd_path_buf, " -sd ");
              eina_strbuf_append(cd->snd_path_buf, append);
-             lex++;
+             snd_path = lex + 1;
           }
         else
           {
@@ -441,9 +443,8 @@ config_snd_path_set(const char *snd_path)
                                                       append);
              eina_strbuf_append(cd->snd_path_buf, " -sd ");
              eina_strbuf_append(cd->snd_path_buf, append);
+             break;
           }
-
-        snd_path = lex;
      }
 }
 
@@ -463,7 +464,7 @@ config_dat_path_set(const char *dat_path)
    const char *lex;
    Eina_Stringshare *append;
 
-   while(dat_path && (strlen(dat_path) > 0))
+   while(dat_path && dat_path[0] != '\0')
      {
         lex = strstr(dat_path, ";");
         if (lex)
@@ -474,7 +475,7 @@ config_dat_path_set(const char *dat_path)
                                                       append);
              eina_strbuf_append(cd->dat_path_buf, " -dd ");
              eina_strbuf_append(cd->dat_path_buf, append);
-             lex++;
+             dat_path = lex + 1;
           }
         else
           {
@@ -483,9 +484,8 @@ config_dat_path_set(const char *dat_path)
                                                       append);
              eina_strbuf_append(cd->dat_path_buf, " -dd ");
              eina_strbuf_append(cd->dat_path_buf, append);
+             break;
           }
-
-        dat_path = lex;
      }
 }
 
@@ -505,7 +505,7 @@ config_fnt_path_set(const char *fnt_path)
    const char *lex;
    Eina_Stringshare *append;
 
-   while(fnt_path && (strlen(fnt_path) > 0))
+   while(fnt_path && fnt_path[0] != '\0')
      {
         lex = strstr(fnt_path, ";");
         if (lex)
@@ -516,7 +516,7 @@ config_fnt_path_set(const char *fnt_path)
                                                       append);
              eina_strbuf_append(cd->fnt_path_buf, " -fd ");
              eina_strbuf_append(cd->fnt_path_buf, append);
-             lex++;
+             fnt_path = lex + 1;
           }
         else
           {
@@ -525,9 +525,8 @@ config_fnt_path_set(const char *fnt_path)
                                                       append);
              eina_strbuf_append(cd->fnt_path_buf, " -fd ");
              eina_strbuf_append(cd->fnt_path_buf, append);
+             break;
           }
-
-        fnt_path = lex;
      }
 }
 
@@ -547,7 +546,7 @@ config_img_path_set(const char *img_path)
    const char *lex;
    Eina_Stringshare *append;
 
-   while(img_path && (strlen(img_path) > 0))
+   while(img_path && img_path[0] != '\0')
      {
         lex = strstr(img_path, ";");
         if (lex)
@@ -558,7 +557,7 @@ config_img_path_set(const char *img_path)
                                                       append);
              eina_strbuf_append(cd->img_path_buf, " -id ");
              eina_strbuf_append(cd->img_path_buf, append);
-             lex++;
+             img_path = lex + 1;
           }
         else
           {
@@ -567,9 +566,8 @@ config_img_path_set(const char *img_path)
                                                       append);
              eina_strbuf_append(cd->img_path_buf, " -id ");
              eina_strbuf_append(cd->img_path_buf, append);
+             break;
           }
-
-        img_path = lex;
      }
 }
 
