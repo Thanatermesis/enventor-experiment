@@ -44,10 +44,7 @@ wireframes_objs_update(wireframes_obj *wireframes)
 
         EINA_LIST_FOREACH(parts, l2, part_name)
           {
-             if (!part_name || !po->name[0]) continue;
-             if (po->name[0] != part_name[0]) continue;
-             if ((strlen(po->name) != strlen(part_name))) continue;
-             if (!strcmp(po->name, part_name))
+             if (po->name == part_name)
                {
                   removed = EINA_FALSE;
                   break;
@@ -84,7 +81,8 @@ wireframes_objs_update(wireframes_obj *wireframes)
 
         EINA_LIST_FOREACH(wireframes->part_list, part_l, po)
           {
-             if (po->name != part_name) continue;
+             // part_name from edje_edit_parts_list_get is not a stringshare
+             if (strcmp(po->name, part_name)) continue;
              pobj = po->obj;
              break;
           }
@@ -218,7 +216,7 @@ static void
 wireframes_callbacks_set(wireframes_obj *wireframes, Evas_Object *layout)
 {
    Eina_List *l = NULL;
-   Eina_Stringshare *part_name = NULL;
+   char *part_name = NULL;
    Eina_List *parts = edje_edit_parts_list_get(layout);
 
    //Set resize and move callback to the edje part in layout to update wireframe.
@@ -238,13 +236,14 @@ wireframes_callbacks_set(wireframes_obj *wireframes, Evas_Object *layout)
                                             update_wireframe_cb, wireframes);
           }
      }
+   edje_edit_string_list_free(parts);
 }
 
 static void
 wireframes_callbacks_del(wireframes_obj *wireframes EINA_UNUSED, Evas_Object *layout)
 {
    Eina_List *l = NULL;
-   Eina_Stringshare *part_name = NULL;
+   char *part_name = NULL;
    Eina_List *parts = edje_edit_parts_list_get(layout);
 
    //Remove the callback of wireframe
@@ -260,7 +259,7 @@ wireframes_callbacks_del(wireframes_obj *wireframes EINA_UNUSED, Evas_Object *la
                                             update_wireframe_cb);
           }
      }
-
+   edje_edit_string_list_free(parts);
 }
 
 /*****************************************************************************/
@@ -327,6 +326,9 @@ wireframes_obj_del(Evas_Object *layout)
 
    wireframes_callbacks_del(wireframes, layout);
 
+   if (wireframes->animator)
+     ecore_animator_del(wireframes->animator);
+
    part_obj *po;
    EINA_LIST_FREE(wireframes->part_list, po)
      {
@@ -335,7 +337,6 @@ wireframes_obj_del(Evas_Object *layout)
         free(po);
      }
 
-   ecore_animator_del(wireframes->animator);
    free(wireframes);
 
    evas_object_data_set(layout, OUTLINEOBJ, NULL);
