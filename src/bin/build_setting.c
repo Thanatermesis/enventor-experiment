@@ -108,11 +108,13 @@ build_setting_config_set(build_setting_data *bsd)
 {
    if (!bsd) return;
 
-   config_input_path_set(elm_object_text_get(bsd->main_edc_entry));
-   config_img_path_set(elm_object_text_get(bsd->img_path_entry));
-   config_snd_path_set(elm_object_text_get(bsd->snd_path_entry));
-   config_fnt_path_set(elm_object_text_get(bsd->fnt_path_entry));
-   config_dat_path_set(elm_object_text_get(bsd->dat_path_entry));
+   /* Use elm_entry_entry_get to get the raw text instead of elm_object_text_get
+      which returns formatted markup, potentially corrupting file paths. */
+   config_input_path_set(elm_entry_entry_get(bsd->main_edc_entry));
+   config_img_path_set(elm_entry_entry_get(bsd->img_path_entry));
+   config_snd_path_set(elm_entry_entry_get(bsd->snd_path_entry));
+   config_fnt_path_set(elm_entry_entry_get(bsd->fnt_path_entry));
+   config_dat_path_set(elm_entry_entry_get(bsd->dat_path_entry));
 }
 
 void
