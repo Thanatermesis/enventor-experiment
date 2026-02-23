@@ -82,16 +82,9 @@ build_cmd_set(build_data *bd)
    Eina_Strbuf *strbuf = NULL;
    //Image
    strbuf_img = strbuf_path_get(bd, ENVENTOR_PATH_TYPE_IMAGE, " -id ");
-   if (!strbuf_img) goto err;
-
    strbuf_snd = strbuf_path_get(bd, ENVENTOR_PATH_TYPE_SOUND, " -sd ");
-   if (!strbuf_snd) goto err;
-
    strbuf_fnt = strbuf_path_get(bd, ENVENTOR_PATH_TYPE_FONT, " -fd ");
-   if (!strbuf_fnt) goto err;
-
    strbuf_dat = strbuf_path_get(bd, ENVENTOR_PATH_TYPE_DATA, " -dd ");
-   if (!strbuf_dat) goto err;
 
    strbuf = eina_strbuf_new();
    if (!strbuf)
@@ -102,16 +95,16 @@ build_cmd_set(build_data *bd)
 
    eina_strbuf_append_printf(strbuf,
       "edje_cc -fastcomp \"%s\" \"%s\" -id \"%s/images\" -sd \"%s/sounds\" -fd \"%s/fonts\" -dd \"%s/data\" %s %s %s %s -beta",
-      bd->edc_path,
+      bd->edc_path ? bd->edc_path : "",
       (char *) eina_list_data_get(bd->pathes_list[ENVENTOR_PATH_TYPE_EDJ]),
       elm_app_data_dir_get(),
       elm_app_data_dir_get(),
       elm_app_data_dir_get(),
       elm_app_data_dir_get(),
-      eina_strbuf_string_get(strbuf_img),
-      eina_strbuf_string_get(strbuf_snd),
-      eina_strbuf_string_get(strbuf_fnt),
-      eina_strbuf_string_get(strbuf_dat));
+      strbuf_img ? eina_strbuf_string_get(strbuf_img) : "",
+      strbuf_snd ? eina_strbuf_string_get(strbuf_snd) : "",
+      strbuf_fnt ? eina_strbuf_string_get(strbuf_fnt) : "",
+      strbuf_dat ? eina_strbuf_string_get(strbuf_dat) : "");
    bd->build_cmd = eina_strbuf_string_steal(strbuf);
    bd->build_cmd_changed = EINA_FALSE;
 
@@ -127,7 +120,8 @@ void
 build_edc(void)
 {
    build_data *bd = g_bd;
-   bd->noti_cb(bd->noti_data, NULL);
+   if (!bd) return;
+   if (bd->noti_cb) bd->noti_cb(bd->noti_data, NULL);
 
    build_cmd_set(bd);
 
@@ -171,6 +165,7 @@ void
 build_term(void)
 {
    build_data *bd = g_bd;
+   if (!bd) return;
    eina_stringshare_del(bd->edc_path);
 
    int i;
@@ -193,6 +188,7 @@ void
 build_err_noti_cb_set(void (*cb)(void *data, const char *msg), void *data)
 {
    build_data *bd = g_bd;
+   if (!bd) return;
    bd->noti_cb = cb;
    bd->noti_data = data;
 }
@@ -201,15 +197,15 @@ Eina_List *
 build_path_get(Enventor_Path_Type type)
 {
    build_data *bd = g_bd;
+   if (!bd || type >= ENVENTOR_PATH_TYPE_LAST) return NULL;
    return bd->pathes_list[type];
 }
 
 Eina_Bool
 build_path_set(Enventor_Path_Type type, const Eina_List *pathes)
 {
-   if (type >= ENVENTOR_PATH_TYPE_LAST) return EINA_FALSE;
-
    build_data *bd = g_bd;
+   if (!bd || type >= ENVENTOR_PATH_TYPE_LAST) return EINA_FALSE;
    Eina_Stringshare *path;
    Eina_List *l;
 
@@ -231,6 +227,7 @@ const char *
 build_edj_path_get(void)
 {
    build_data *bd = g_bd;
+   if (!bd) return NULL;
    return eina_list_data_get(bd->pathes_list[ENVENTOR_PATH_TYPE_EDJ]);
 }
 
@@ -238,6 +235,7 @@ const char *
 build_edc_path_get(void)
 {
    build_data *bd = g_bd;
+   if (!bd) return NULL;
    return bd->edc_path;
 }
 
@@ -245,7 +243,7 @@ void
 build_edc_path_set(const char *edc_path)
 {
    build_data *bd = g_bd;
-   if (bd->edc_path == edc_path) return;
+   if (!bd || bd->edc_path == edc_path) return;
    eina_stringshare_del(bd->edc_path);
    bd->edc_path = eina_stringshare_add(edc_path);
    bd->build_cmd_changed = EINA_TRUE;
