@@ -1415,6 +1415,8 @@ edc_navigator_group_update(const char *cur_group)
    Eina_List *group_list =
       enventor_item_group_list_get(file_mgr_focused_item_get());
 
+   if (!group_list) return;
+
    unsigned int cur_group_len = 0;
    group_it *git;
    Eina_List *l, *ll;
@@ -1495,6 +1497,7 @@ edc_navigator_group_update(const char *cur_group)
      }
 
    EINA_LIST_FREE(group_list, name) eina_stringshare_del(name);
+   eina_list_free(group_list);
 }
 
 Evas_Object *
@@ -1525,7 +1528,7 @@ edc_navigator_init(Evas_Object *parent)
                                   gl_contract_request_cb, nd);
    evas_object_smart_callback_add(genlist, "selected",
                                   gl_selected_cb, nd);
-   evas_object_smart_callback_add(genlist, "selected",
+   evas_object_smart_callback_add(genlist, "unselected",
                                   gl_unselected_cb, nd);
    evas_object_size_hint_weight_set(genlist, EVAS_HINT_EXPAND,
                                     EVAS_HINT_EXPAND);
