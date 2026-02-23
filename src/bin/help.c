@@ -202,14 +202,15 @@ help_open(void)
    elm_object_signal_emit(layout, "elm,state,content,hide", "");
 
    //Window
-   win_w = (Evas_Coord) ((double) win_w * elm_config_scale_get());
-   win_h = (Evas_Coord) ((double) win_h * elm_config_scale_get());
-   evas_object_resize(win, win_w, win_h);
+   Evas_Coord w = (Evas_Coord) ((double) win_w * elm_config_scale_get());
+   Evas_Coord h = (Evas_Coord) ((double) win_h * elm_config_scale_get());
+   evas_object_resize(win, w, h);
    evas_object_show(win);
 
    //Keygrabber
    Evas_Object *keygrabber =
       evas_object_rectangle_add(evas_object_evas_get(win));
+   elm_win_resize_object_add(win, keygrabber);
    evas_object_event_callback_add(keygrabber, EVAS_CALLBACK_KEY_DOWN,
                                   keygrabber_key_down_cb, NULL);
    if (!evas_object_key_grab(keygrabber, "Escape", 0, 0, EINA_TRUE))
@@ -226,6 +227,8 @@ help_close(void)
 
    //Save last state
    evas_object_geometry_get(win, NULL, NULL, &win_w, &win_h);
+   win_w /= elm_config_scale_get();
+   win_h /= elm_config_scale_get();
    elm_win_screen_position_get(win, &win_x, &win_y);
    evas_object_del(win);
 
