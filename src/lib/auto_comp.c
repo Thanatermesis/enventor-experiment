@@ -96,6 +96,7 @@ autocomp_load(autocomp_data *ad)
    if (ad->source_file)
      eet_close(ad->source_file);
    ad->source_file = eet_open(buf, EET_FILE_MODE_READ);
+   if (!ad->source_file) return;
 
    ad->lexem_root = (lexem *)eet_data_read(ad->source_file, lex_desc, "node");
    ad->lexem_ptr = ad->lexem_root;
@@ -118,6 +119,9 @@ lexem_tree_free(lexem *node)
    EINA_LIST_FREE(node->nodes, child)
      lexem_tree_free(child);
 
+   // txt and name are array of strings from eet_data_read
+   // We must not free the internal strings if they are owned by eet,
+   // but the arrays themselves must be freed.
    free(node->txt);
    free(node->name);
    free(node);
@@ -222,8 +226,14 @@ context_lexem_thread_cb(void *data, Ecore_Thread *thread)
                }
 
              //Store this context.
-             strncpy(stack[depth], help_ptr, context_len);
-             if ((++depth) == MAX_CONTEXT_STACK) break;
+             if (depth < MAX_CONTEXT_STACK)
+               {
+                  int len = (context_len < MAX_KEYWORD_LENGTH) ? context_len : (MAX_KEYWORD_LENGTH - 1);
+                  strncpy(stack[depth], help_ptr, len);
+                  stack[depth][len] = '\0';
+                  depth++;
+               }
+             if (depth == MAX_CONTEXT_STACK) break;
           }
 
         //Case 2. Find a context and store it.
@@ -249,16 +259,17 @@ context_lexem_thread_cb(void *data, Ecore_Thread *thread)
              if (help_ptr != utf8) help_ptr++;
 
              context_len = help_end_ptr - help_ptr + 1;
-             if (context_len >= MAX_KEYWORD_LENGTH)
-               {
-                  cur++;
-                  continue;
-               }
 
              //Store this context.
-             strncpy(stack[depth], help_ptr, context_len);
-             strncpy(stack[depth], help_ptr, context_len);
-             if ((++depth) == MAX_CONTEXT_STACK) break;
+             if (depth < MAX_CONTEXT_STACK)
+               {
+                  int len = (context_len < MAX_KEYWORD_LENGTH) ? context_len : (MAX_KEYWORD_LENGTH - 1);
+                  strncpy(stack[depth], help_ptr, len);
+                  stack[depth][len] = '\0';
+                  depth++;
+               }
+
+             if (depth == MAX_CONTEXT_STACK) break;
 
              dot_lex = EINA_TRUE;
           }
@@ -268,15 +279,21 @@ context_lexem_thread_cb(void *data, Ecore_Thread *thread)
         if (dot_lex && (*cur == ';'))
           {
              dot_lex = EINA_FALSE;
-             memset(stack[depth], 0x0, MAX_KEYWORD_LENGTH);
-             if (depth > 0) depth--;
+             if (depth > 0)
+               {
+                  depth--;
+                  memset(stack[depth], 0x0, MAX_KEYWORD_LENGTH);
+               }
           }
 
         //End of a context. Reset the previous context if its out of scope.
         if (*cur == '}')
           {
-             memset(stack[depth], 0x0, MAX_KEYWORD_LENGTH);
-             if (depth > 0) depth--;
+             if (depth > 0)
+               {
+                  depth--;
+                  memset(stack[depth], 0x0, MAX_KEYWORD_LENGTH);
+               }
           }
         cur++;
      }
@@ -713,6 +730,7 @@ entry_changed_cb(void *data, Evas_Object *obj EINA_UNUSED,
 
    if (info->insert)
      {
+        if (!info->change.insert.content) return;
         if ((strlen(info->change.insert.content) > 1) ||
             (info->change.insert.content[0] == ' ') ||
             (info->change.insert.content[0] == '.'))
@@ -732,11 +750,12 @@ entry_changed_cb(void *data, Evas_Object *obj EINA_UNUSED,
      }
    else
      {
-        if (info->change.del.content[0] != ' ')
+        if (info->change.del.content && info->change.del.content[0] != ' ')
           {
              entry_anchor_off(ad);
-             /* FIXME: abs() shouldn't be used here (size_t is unsigned) */
-             int cnt = abs(info->change.del.end - info->change.del.start);
+             int cnt = (info->change.del.end > info->change.del.start) ? 
+                       (info->change.del.end - info->change.del.start) : 
+                       (info->change.del.start - info->change.del.end);
              pop_char(ad, cnt);
           }
      }
