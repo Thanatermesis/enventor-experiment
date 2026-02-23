@@ -187,10 +187,12 @@ macro_key_push(color_data *cd, char *str)
 
    //cutoff "()" from the macro name
    char *cut = strchr(key, '(');
+   char *allocated_key = NULL;
    if (cut)
      {
-        key = eina_strndup(str, cut - str);
-        if (!key) return;
+        allocated_key = eina_strndup(str, cut - str);
+        if (!allocated_key) return;
+        key = allocated_key;
      }
 
    char tmp[2];
@@ -211,7 +213,7 @@ macro_key_push(color_data *cd, char *str)
 
    cd->macros = eina_list_append(cd->macros, eina_stringshare_add(tuple.key));
 
-   if (cut) free(key);
+   if (allocated_key) free(allocated_key);
 }
 
 static Eina_Bool
@@ -219,7 +221,7 @@ color_markup_insert_internal(Eina_Strbuf *strbuf, const char **src, int length,
                              char **cur, char **prev,  const char *cmp,
                              Eina_Stringshare *col)
 {
-   char buf[128];
+   char buf[512];
 
    eina_strbuf_append_length(strbuf, *prev, *cur - *prev);
    snprintf(buf, sizeof(buf), "<color=#%s>%s</color>", col, cmp);
@@ -420,20 +422,19 @@ macro_apply(Eina_Strbuf *strbuf, const char **src, int length, char **cur,
    if (!space) space = (char *) eol;
 
    //Let's find the macro name
-   while ((*space == ' ') && (space != eol)) space++;
+   while (space < eol && *space == ' ') space++;
    char *macro_begin = space;
    char *macro_end = strchr(space, ' ');
 
    //Excetional case 1
-   if (!macro_end) macro_end = (char *) eol;
-   //Exceptional case 2
-   else if (macro_end > eol) macro_end = (char *) eol;
+   if (!macro_end || macro_end > eol) macro_end = (char *) eol;
    //Let's check the macro function case
    else
    {
      int macro_len = macro_end - macro_begin;
-     char *macro = alloca(macro_len);
-     strncpy(macro, macro_begin, macro_len);
+     char *macro = alloca(macro_len + 1);
+     memcpy(macro, macro_begin, macro_len);
+     macro[macro_len] = '\0';
 
      //Check how many "(", ")" pairs are exists
      int bracket_inside = 0;
@@ -460,7 +461,7 @@ macro_apply(Eina_Strbuf *strbuf, const char **src, int length, char **cur,
    //#define, #ifdef, #if, #...
    eina_strbuf_append_length(strbuf, *prev, (*cur - *prev));
 
-   char buf[128];
+   char buf[512];
    snprintf(buf, sizeof(buf), "<color=#%s>#", col);
    eina_strbuf_append(strbuf, buf);
 
