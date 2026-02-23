@@ -104,7 +104,7 @@ preference_setting_reset(preference_setting_data *psd)
    elm_check_state_set(psd->toggle_red_alert, config_red_alert_get());
 
    //Reset view scale
-   int view_size_w, view_size_h;
+   Evas_Coord view_size_w, view_size_h;
    config_view_size_get(&view_size_w, &view_size_h);
    char buf[10];
    snprintf(buf, sizeof(buf), "%d", view_size_w);
@@ -181,7 +181,7 @@ preference_setting_content_get(preference_setting_data *psd,
    elm_box_pack_end(box2, rect);
 
    Evas_Coord w, h;
-   char w_str[5], h_str[5];
+   char w_str[10], h_str[10];
    config_view_size_get(&w, &h);
    snprintf(w_str, sizeof(w_str), "%d", w);
    snprintf(h_str, sizeof(h_str), "%d", h);
