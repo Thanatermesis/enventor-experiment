@@ -447,6 +447,7 @@ base_enventor_set(Enventor_Object *enventor)
 {
    base_data *bd = g_bd;
    EINA_SAFETY_ON_NULL_RETURN(bd);
+   EINA_SAFETY_ON_NULL_RETURN(enventor);
 
    bd->enventor = enventor;
 

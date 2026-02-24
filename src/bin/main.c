@@ -863,8 +863,11 @@ statusbar_set(void)
 static void
 keygrabber_init(app_data *ad)
 {
-   Evas *e = evas_object_evas_get(base_enventor_get());
-   ad->keygrabber = base_enventor_get();
+   Enventor_Object *enventor = base_enventor_get();
+   EINA_SAFETY_ON_NULL_RETURN(enventor);
+
+   Evas *e = evas_object_evas_get(enventor);
+   ad->keygrabber = enventor;
    evas_object_event_callback_add(ad->keygrabber, EVAS_CALLBACK_KEY_DOWN,
                                   keygrabber_key_down_cb, NULL);
 #define GRAB_ADD(key, modifier) \
