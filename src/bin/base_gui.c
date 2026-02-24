@@ -308,6 +308,13 @@ base_gui_term(void)
 
    if (bd->edc_navi_update_timer)
      ecore_timer_del(bd->edc_navi_update_timer);
+
+   if (bd->enventor)
+     {
+        evas_object_del(bd->enventor);
+        bd->enventor = NULL;
+     }
+
    file_browser_term();
    edc_navigator_term();
    file_tab_term();
