@@ -172,6 +172,7 @@ edj_mgr_view_switch_to(view_data *vd)
 {
    edj_mgr *em = g_em;
 
+   if (!em || !em->layout) return;
    if (em->edj && (em->edj->vd == vd)) return;
 
    //Switch views

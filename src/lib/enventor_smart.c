@@ -273,6 +273,8 @@ _enventor_object_del_cb(void *data, Evas *e EINA_UNUSED,
    ecore_event_handler_del(pd->key_down_handler);
    ecore_event_handler_del(pd->key_up_handler);
 
+   edj_mgr_clear();
+
    _enventor_sub_items_free(pd);
    _enventor_main_item_free(pd);
 
