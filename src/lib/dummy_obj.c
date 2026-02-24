@@ -148,7 +148,7 @@ dummy_objs_update(dummy_obj *dummy)
              int x = 0, y = 0, w = 0, h = 0, lx = 0, ly = 0;
 
              EINA_LIST_FOREACH(dummy->spacers, spacer_l, po)
-                if (po->name == part_name)
+                if (!strcmp(po->name, part_name))
                   {
                      obj = po->obj;
                      break;
@@ -180,10 +180,13 @@ dummy_objs_update(dummy_obj *dummy)
                   evas_object_event_callback_add(obj, EVAS_CALLBACK_MOUSE_DOWN,
                                                  edje_part_clicked, po);
                }
-             evas_object_geometry_get(dummy->layout, &lx, &ly, NULL, NULL);
-             edje_object_part_geometry_get(dummy->layout, part_name, &x, &y, &w, &h);
-             evas_object_resize(obj, w, h);
-             evas_object_move(obj, lx + x, ly + y);
+             if (evas_object_visible_get(dummy->layout))
+               {
+                  evas_object_geometry_get(dummy->layout, &lx, &ly, NULL, NULL);
+                  edje_object_part_geometry_get(dummy->layout, part_name, &x, &y, &w, &h);
+                  evas_object_resize(obj, w, h);
+                  evas_object_move(obj, lx + x, ly + y);
+               }
           }
      }
    edje_edit_string_list_free(parts);
