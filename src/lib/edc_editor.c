@@ -13,6 +13,7 @@ const int MAX_LINE_DIGIT_CNT = 12;
 const int SYNTAX_COLOR_SPARE_LINES = 42;
 const double SYNTAX_COLOR_DEFAULT_TIME = 0.25;
 const double SYNTAX_COLOR_SHORT_TIME = 0.025;
+const double LIVE_VIEW_UPDATE_DELAY = 0.5;
 
 typedef struct syntax_color_thread_data_s
 {
@@ -54,6 +55,7 @@ struct editor_s
 
    Ecore_Timer *syntax_color_timer;
    syntax_color_td *sctd;
+   Ecore_Timer *live_view_timer;
 
    void (*view_sync_cb)(void *data, Eina_Stringshare *state_name, double state_value,
                         Eina_Stringshare *part_name, Eina_Stringshare *group_name);
@@ -77,6 +79,8 @@ static Eina_Bool
 image_preview_show(edit_data *ed, char *cur, Evas_Coord x, Evas_Coord y);
 static void
 error_line_num_highlight(edit_data *ed);
+static void
+live_view_update_schedule(edit_data *ed);
 
 static void
 line_init(edit_data *ed)
@@ -482,7 +486,50 @@ edit_changed_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
    if (!syntax_color) return;
    syntax_color_partial_update(ed, SYNTAX_COLOR_DEFAULT_TIME);
 
+   // Schedule live view update for realtime preview
+   live_view_update_schedule(ed);
+
    parser_bracket_cancel(ed->pd);
+}
+
+static Eina_Bool
+live_view_update_timer_cb(void *data)
+{
+   edit_data *ed = data;
+   
+   // Only update if this is the main file (not a sub-item)
+   if (!ed->main)
+     {
+        ed->live_view_timer = NULL;
+        return ECORE_CALLBACK_CANCEL;
+     }
+
+   // Save the file if there are changes
+   if (edit_changed_get(ed))
+     {
+        const char *file = edit_file_get(ed);
+        if (file)
+          {
+             edit_save(ed, file);
+             build_edc();
+             edj_mgr_all_views_reload();
+          }
+     }
+
+   ed->live_view_timer = NULL;
+   return ECORE_CALLBACK_CANCEL;
+}
+
+static void
+live_view_update_schedule(edit_data *ed)
+{
+   // Only schedule for main file
+   if (!ed->main) return;
+
+   // Reset the timer - debounce the update
+   ecore_timer_del(ed->live_view_timer);
+   ed->live_view_timer = ecore_timer_add(LIVE_VIEW_UPDATE_DELAY,
+                                          live_view_update_timer_cb, ed);
 }
 
 static void
@@ -1635,6 +1682,7 @@ edit_term(edit_data *ed)
         ecore_thread_cancel(ed->sctd->thread);
         ed->sctd->ed = NULL;
      }
+   ecore_timer_del(ed->live_view_timer);
    ecore_timer_del(ed->syntax_color_timer);
    evas_object_del(ed->layout);
    eina_stringshare_del(ed->filepath);
