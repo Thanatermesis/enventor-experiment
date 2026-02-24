@@ -1147,6 +1147,10 @@ init(app_data *ad, int argc, char **argv)
 static void
 term(void)
 {
+   static Eina_Bool termed = EINA_FALSE;
+   if (termed) return;
+   termed = EINA_TRUE;
+
    menu_term();
    live_edit_term();
    stats_term();
@@ -1166,7 +1170,7 @@ static int elm_main(int argc, char **argv)
 
    if (!init(&ad, argc, argv))
      {
-        term();
+        enventor_lock_remove();
         return 0;
      }
 
