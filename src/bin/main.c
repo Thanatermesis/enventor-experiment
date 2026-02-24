@@ -1154,6 +1154,9 @@ term(void)
    if (termed) return;
    termed = EINA_TRUE;
 
+   if (base_enventor_get())
+     enventor_object_focus_set(base_enventor_get(), EINA_FALSE);
+
    menu_term();
    live_edit_term();
    stats_term();
@@ -1171,13 +1174,8 @@ static int elm_main(int argc, char **argv)
    app_data ad;
    memset(&ad, 0x00, sizeof(ad));
 
-   if (!init(&ad, argc, argv))
-     {
-        enventor_lock_remove();
-        return 0;
-     }
-
-   elm_run();
+   if (init(&ad, argc, argv))
+     elm_run();
 
    term();
 
