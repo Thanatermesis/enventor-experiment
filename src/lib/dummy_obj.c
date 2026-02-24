@@ -126,7 +126,12 @@ dummy_objs_update(dummy_obj *dummy)
              //New part. Add fake object.
              Evas_Object *obj = edje_object_add(evas);
              if (!edje_object_file_set(obj, build_edj_path_get(), "swallow"))
-               EINA_LOG_ERR("Failed to set File to Edje Object!");
+               {
+                  EINA_LOG_ERR("Failed to set File to Edje Object!");
+                  evas_object_del(obj);
+                  free(po);
+                  continue;
+               }
              edje_object_part_swallow(dummy->layout, part_name, obj);
 
              po->obj = obj;
@@ -157,7 +162,13 @@ dummy_objs_update(dummy_obj *dummy)
                        continue;
                     }
                   obj = edje_object_add(evas);
-                  edje_object_file_set(obj, build_edj_path_get(), "spacer");
+                  if (!edje_object_file_set(obj, build_edj_path_get(), "spacer"))
+                    {
+                       EINA_LOG_ERR("Failed to set File to Edje Object!");
+                       evas_object_del(obj);
+                       free(po);
+                       continue;
+                    }
                   if (o2) evas_object_smart_member_add(obj, o2);
 
                   po->obj = obj;
