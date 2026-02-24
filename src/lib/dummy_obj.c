@@ -102,16 +102,7 @@ dummy_objs_update(dummy_obj *dummy)
      }
 
    //Trick!. set smart members of actual live view object.
-   // VIEW_DATA is not defined here, we must get it from the enventor object.
-   // For now, we ensure we don't leak 'parts' if we cannot find the view.
-   Evas_Object *o2 = NULL;
-   Evas_Object *scroller = view_obj_get(NULL);
-   if (scroller)
-     {
-        Evas_Object *o = elm_object_content_get(scroller);
-        if (o)
-          o2 = elm_object_part_content_get(o, "elm.swallow.content");
-     }
+   Evas_Object *o2 = evas_object_smart_parent_get(dummy->layout);
 
    //Add new part object or Update changed part.
    EINA_LIST_FOREACH(parts, l, part_name)
