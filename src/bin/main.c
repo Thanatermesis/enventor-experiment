@@ -410,7 +410,6 @@ static void
 elm_setup(void)
 {
    elm_need_efreet();
-   elm_config_profile_set("standard");
 
    /* Recover the scale since it will be reset by
       elm_config_profile_set() */
