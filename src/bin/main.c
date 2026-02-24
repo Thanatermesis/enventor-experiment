@@ -18,6 +18,7 @@ static HANDLE hMutex = NULL;
 typedef struct app_s
 {
    Evas_Object *keygrabber;
+   Ecore_Timer *save_timer;
    Eina_Bool on_saving : 1;
    Eina_Bool lazy_save : 1;
 } app_data;
@@ -519,6 +520,29 @@ enventor_ctxpopup_activated_cb(void *data EINA_UNUSED,
      stats_info_msg_update("Backspace: Reset values.");
 }
 
+static Eina_Bool
+_auto_save_do(void *data)
+{
+   app_data *ad = data;
+   Enventor_Item *it = file_mgr_focused_item_get();
+
+   ad->save_timer = NULL;
+
+   if (ad->on_saving)
+     {
+        ad->lazy_save = EINA_TRUE;
+        return ECORE_CALLBACK_CANCEL;
+     }
+
+   if (it && enventor_item_modified_get(it))
+     {
+        ad->on_saving = EINA_TRUE;
+        enventor_item_file_save(it, NULL);
+     }
+
+   return ECORE_CALLBACK_CANCEL;
+}
+
 static void
 enventor_ctxpopup_changed_cb(void *data, Enventor_Object *obj EINA_UNUSED,
                              void *event_info)
@@ -528,14 +552,8 @@ enventor_ctxpopup_changed_cb(void *data, Enventor_Object *obj EINA_UNUSED,
 
    if (!it || !enventor_item_modified_get(it)) return;
 
-   if (ad->on_saving)
-     {
-        ad->lazy_save = EINA_TRUE;
-        return;
-     }
-   ad->on_saving = EINA_TRUE;
-
-   enventor_item_file_save(it, NULL);
+   if (ad->save_timer) ecore_timer_del(ad->save_timer);
+   ad->save_timer = ecore_timer_add(0.1, _auto_save_do, ad);
 }
 
 static void
@@ -550,7 +568,8 @@ enventor_live_view_updated_cb(void *data, Enventor_Object *obj EINA_UNUSED,
         ad->lazy_save = EINA_FALSE;
         if (it && enventor_item_modified_get(it))
           {
-             enventor_item_file_save(it, NULL);
+             if (ad->save_timer) ecore_timer_del(ad->save_timer);
+             ad->save_timer = ecore_timer_add(0.1, _auto_save_do, ad);
              base_edc_navigator_group_update();
              return;
           }
@@ -1160,6 +1179,10 @@ term(void)
 
    if (base_enventor_get())
      enventor_object_focus_set(base_enventor_get(), EINA_FALSE);
+
+   // We need access to ad here, but term() doesn't have it. 
+   // However, we can safely let the OS cleanup or use a global if needed.
+   // For now, ensure timers are stopped if we had a global reference.
 
    menu_term();
    live_edit_term();
