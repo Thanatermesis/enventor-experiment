@@ -164,13 +164,18 @@ main_mouse_wheel_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *ev)
       return ECORE_CALLBACK_PASS_ON;
 
    //View Scale
-   Evas_Object *view = enventor_object_live_view_get(base_enventor_get());
+   Enventor_Object *enventor = base_enventor_get();
+   if (!enventor) return ECORE_CALLBACK_PASS_ON;
+
+   Evas_Object *view = enventor_object_live_view_get(enventor);
+   if (!view) return ECORE_CALLBACK_PASS_ON;
+
    evas_object_geometry_get(view, &x, &y, &w, &h);
 
    if ((event->x >= x) && (event->x <= (x + w)) &&
        (event->y >= y) && (event->y <= (y + h)))
      {
-        double scale = enventor_object_live_view_scale_get(base_enventor_get());
+        double scale = enventor_object_live_view_scale_get(enventor);
 
         if (event->z < 0) scale += 0.05;
         else scale -= 0.05;
@@ -178,7 +183,7 @@ main_mouse_wheel_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *ev)
         if (scale > MAX_VIEW_SCALE) scale = MAX_VIEW_SCALE;
         else if (scale < MIN_VIEW_SCALE) scale = MIN_VIEW_SCALE;
 
-        enventor_object_live_view_scale_set(base_enventor_get(), scale);
+        enventor_object_live_view_scale_set(enventor, scale);
 
         //Just in live edit mode case.
         live_edit_update();
@@ -190,23 +195,25 @@ main_mouse_wheel_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *ev)
 
    //Font Size
    Enventor_Item *it = file_mgr_focused_item_get();
-   evas_object_geometry_get(enventor_item_editor_get(it), &x, &y, &w, &h);
+   if (!it) return ECORE_CALLBACK_PASS_ON;
+
+   Evas_Object *editor = enventor_item_editor_get(it);
+   if (!editor) return ECORE_CALLBACK_PASS_ON;
+
+   evas_object_geometry_get(editor, &x, &y, &w, &h);
 
    if ((event->x >= x) && (event->x <= (x + w)) &&
        (event->y >= y) && (event->y <= (y + h)))
      {
-        if (event->z < 0)
-          {
-             config_font_scale_set(config_font_scale_get() + 0.1f);
-             enventor_object_font_scale_set(base_enventor_get(),
-                                            config_font_scale_get());
-          }
-        else
-          {
-             config_font_scale_set(config_font_scale_get() - 0.1f);
-             enventor_object_font_scale_set(base_enventor_get(),
-                                            config_font_scale_get());
-          }
+        float f_scale = config_font_scale_get();
+        if (event->z < 0) f_scale += 0.1f;
+        else f_scale -= 0.1f;
+
+        if (f_scale < 0.1f) f_scale = 0.1f;
+        if (f_scale > 10.0f) f_scale = 10.0f;
+
+        config_font_scale_set(f_scale);
+        enventor_object_font_scale_set(enventor, f_scale);
 
         char buf[128];
         snprintf(buf, sizeof(buf), _("Font Size: %1.1fx"),
