@@ -306,7 +306,8 @@ base_gui_term(void)
    base_data *bd = g_bd;
    if (!bd) return;
 
-   ecore_timer_del(bd->edc_navi_update_timer);
+   if (bd->edc_navi_update_timer)
+     ecore_timer_del(bd->edc_navi_update_timer);
    file_browser_term();
    edc_navigator_term();
    file_tab_term();
@@ -319,12 +320,13 @@ base_gui_term(void)
 void
 base_edc_navigator_group_update(void)
 {
-   if (!config_edc_navigator_get()) return;
-
    base_data *bd = g_bd;
    EINA_SAFETY_ON_NULL_RETURN(bd);
 
-   ecore_timer_del(bd->edc_navi_update_timer);
+   if (!config_edc_navigator_get()) return;
+
+   if (bd->edc_navi_update_timer)
+     ecore_timer_del(bd->edc_navi_update_timer);
    bd->edc_navi_update_timer = ecore_timer_add(EDC_NAVIGATOR_UPDATE_TIME,
                                                edc_navigator_update_timer_cb,
                                                bd);

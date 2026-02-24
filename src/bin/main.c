@@ -521,8 +521,6 @@ enventor_ctxpopup_changed_cb(void *data, Enventor_Object *obj EINA_UNUSED,
 
    if (!enventor_item_modified_get(it)) return;
 
-   //FIXME: Probably, this lazy stuff is broken.
-   //These data should be up to items.
    if (ad->on_saving)
      {
         ad->lazy_save = EINA_TRUE;
@@ -538,21 +536,21 @@ enventor_live_view_updated_cb(void *data, Enventor_Object *obj EINA_UNUSED,
                               void *event_info)
 {
    app_data *ad = data;
-
    Enventor_Item *it = event_info;
 
-   //FIXME: Probably, this lazy stuff is broken.
-   //These data should be up to items.
-   if (ad->lazy_save && enventor_item_modified_get(it))
-     {
-        enventor_item_file_save(it, NULL);
-        ad->lazy_save = EINA_FALSE;
-     }
-   else
+   if (ad->lazy_save)
      {
         ad->lazy_save = EINA_FALSE;
-        ad->on_saving = EINA_FALSE;
+        if (enventor_item_modified_get(it))
+          {
+             enventor_item_file_save(it, NULL);
+             goto end;
+          }
      }
+
+   ad->on_saving = EINA_FALSE;
+
+end:
    base_edc_navigator_group_update();
 }
 
