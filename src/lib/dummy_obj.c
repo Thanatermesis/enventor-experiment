@@ -40,6 +40,7 @@ edje_part_clicked(void *data, Evas *e EINA_UNUSED,
 static void
 dummy_objs_update(dummy_obj *dummy)
 {
+   if (!dummy || !dummy->layout) return;
    Eina_List *parts = edje_edit_parts_list_get(dummy->layout);
    Eina_List *l, *l_next, *l2;
    char *part_name;
