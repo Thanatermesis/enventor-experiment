@@ -526,7 +526,7 @@ enventor_ctxpopup_changed_cb(void *data, Enventor_Object *obj EINA_UNUSED,
    app_data *ad = data;
    Enventor_Item *it = event_info;
 
-   if (!enventor_item_modified_get(it)) return;
+   if (!it || !enventor_item_modified_get(it)) return;
 
    if (ad->on_saving)
      {
@@ -548,16 +548,15 @@ enventor_live_view_updated_cb(void *data, Enventor_Object *obj EINA_UNUSED,
    if (ad->lazy_save)
      {
         ad->lazy_save = EINA_FALSE;
-        if (enventor_item_modified_get(it))
+        if (it && enventor_item_modified_get(it))
           {
              enventor_item_file_save(it, NULL);
-             goto end;
+             base_edc_navigator_group_update();
+             return;
           }
      }
 
    ad->on_saving = EINA_FALSE;
-
-end:
    base_edc_navigator_group_update();
 }
 
